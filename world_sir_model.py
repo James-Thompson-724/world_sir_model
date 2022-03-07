@@ -431,7 +431,7 @@ def sim_factory(config):
 
     return sim
 
-def run(config, sim, lockdown_input, border_closure_input):
+def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     """Main simulation function"""
 
     render                = config['render']
@@ -643,7 +643,7 @@ vaccination_input = np.full((time_horizon_days, number_of_regions), 0, dtype=int
 
 # -------------------------------------- SIMULATE --------------------------------------------------
 
-total_deaths = run(config_world, sim, lockdown_input, border_closure_input)
+total_deaths = run(config_world, sim, lockdown_input, border_closure_input, vaccination_input)
 
 # -------------------------------------- CALCULATE COST --------------------------------------------
 
