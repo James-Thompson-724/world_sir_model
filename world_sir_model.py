@@ -579,7 +579,7 @@ def cost(total_deaths, lockdown_input, border_closure_input, vaccination_input):
 # -------------------------------------- CONFIG ----------------------------------------------------
 
 config_world =\
-       {'render': False,
+       {'render': True,
         'game_input': False,
         'display_width': 1200,
         'display_height': 700,
@@ -599,10 +599,10 @@ config_world =\
         'lockdown_factor': 1/10,
         'border_closure_factor': 1/10,
         'max_norm_prevalance_to_plot': 1.0,
-        'shp_path': "World/CNTR_RG_60M_2020_4326.shp",
-        'pop_path': "World/country_data.csv",
-        'airport_path': "World/Airports_2010.csv",
-        'air_travel_path': "World/Prediction_Monthly.csv"}
+        'shp_path': "data/CNTR_RG_60M_2020_4326.shp",
+        'pop_path': "data/country_data.csv",
+        'airport_path': "data/Airports_2010.csv",
+        'air_travel_path': "data/Prediction_Monthly.csv"}
 
 # -------------------------------------- BUILD SIMULATOR -------------------------------------------
 
