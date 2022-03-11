@@ -367,15 +367,17 @@ def mouse_input(event, regions, lockdown_status, border_closure_status):
     if event.button == 1:
         # Determine in which region the user has left-clicked
         for region in regions:
-            if region.multipolygon.contains(Point(event.pos)):
-                # Flip lockdown status
-                lockdown_status[region.id] *= -1
+            if region.multipolygon is not None:
+                if region.multipolygon.contains(Point(event.pos)):
+                    # Flip lockdown status
+                    lockdown_status[region.id] *= -1
     if event.button == 3:
         # Determine in which region the user has right-clicked
         for region in regions:
-            if region.multipolygon.contains(Point(event.pos)):
-                # Flip border closure status
-                border_closure_status[region.id] *= -1
+            if region.multipolygon is not None:
+                if region.multipolygon.contains(Point(event.pos)):
+                    # Flip border closure status
+                    border_closure_status[region.id] *= -1
 
 def sim_factory(config):
     """Constructs the simulator object"""
@@ -522,7 +524,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
                 if event.type == pygame.QUIT:
                     done = True
                 if event.type == pygame.MOUSEBUTTONDOWN and game_input:
-                    mouse_input(event, regions)
+                    mouse_input(event, regions, lockdown_status, border_closure_status)
 
         # Update non-pharmacheutical interventions at the end of each day
         if t % ticks_in_a_day == 0:
@@ -593,7 +595,7 @@ config_world =\
         'removal_rates_per_day': np.array([1 / 9, 1 / 9]),
         'infection_fatality_rate_by_age': np.array([[0.0, 0.001, 0.01], [0.0, 0.001, 0.01]]),
         'initial_cases_dict': {'CN': 1000},
-        'local_travel_prob_per_day': 0.0001,
+        'local_travel_prob_per_day': 0.0,
         'distance_threshold': 50,
         'contacts_per_day': 778,
         'lockdown_factor': 1/10,
@@ -652,6 +654,10 @@ total_cost = cost(total_deaths, lockdown_input, border_closure_input, vaccinatio
 print("Total cost:", total_cost)
 
 # -------------------------------------- COMMENTS --------------------------------------------------
+
+# - Vaccinate at the beginning of the day, as opposed to the end of the day (for day 0 scenario)?
+# - UK shape file not found (could be UK vs GB naming etc)
+# - Issue with multipolygons in game mode?
 
 # - Seasonal effects?
 # - An ifr multiplier for each region, using real world data?
