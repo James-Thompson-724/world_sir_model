@@ -522,7 +522,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
                 if event.type == pygame.QUIT:
                     done = True
                 if event.type == pygame.MOUSEBUTTONDOWN and game_input:
-                    mouse_input(event, regions)
+                    mouse_input(event, regions, lockdown_status, border_closure_status)
 
         # Update non-pharmacheutical interventions at the end of each day
         if t % ticks_in_a_day == 0:
@@ -580,7 +580,7 @@ def cost(total_deaths, lockdown_input, border_closure_input, vaccination_input):
 
 config_world =\
        {'render': True,
-        'game_input': False,
+        'game_input': True,
         'display_width': 1200,
         'display_height': 700,
         'font_size': 20,
