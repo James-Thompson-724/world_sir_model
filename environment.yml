@@ -9,6 +9,7 @@ dependencies:
  - pip
  - sortedcollections
  - Shapely
+ - pyshp
  # Jupyter & interactive stuff
  #- jupyter=1.0.0
  #- jupyterlab=3.2.9
