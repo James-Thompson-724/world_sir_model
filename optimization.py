@@ -99,13 +99,12 @@ def evaluate(solution):
     return total_cost
 
 
-
-
 # switches to decide what to optimize
 optimize_max_vaccines = True
 optimize_vaccine_timing = True
 optimize_lockdown = True
 optimize_border_closure = True
+
 
 # optimization parameters
 popsize = 48 # number og solutions to be evaluated each generation
