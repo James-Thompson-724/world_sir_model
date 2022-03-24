@@ -246,7 +246,6 @@ for step in range(n_gens):
         new_pop = np.concatenate([new_pop, [new_solution]])
         
     population = new_pop.copy()
-    step += 1
     
 
 
