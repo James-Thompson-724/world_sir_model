@@ -1,3 +1,6 @@
+
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import copy
 import csv
@@ -505,7 +508,6 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         ticks_in_a_day = int(1 / step_size)
 
         day = t // ticks_in_a_day
-
         # Render
         if render:
             # Calculate deaths
@@ -533,13 +535,14 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
 
         # Update contact matrix according to non-pharmacheutical interventions
         contact_matrix = copy.deepcopy(baseline_contact_matrix)
-        for i in range(number_of_regions):
-            if lockdown_status[i] == 1:
-                contact_matrix[i][i] = baseline_contact_matrix[i][i] * lockdown_factor
-            if border_closure_status[i] == 1:
-                for j in range(number_of_regions):
-                    if i != j:
-                        contact_matrix[i][j] = baseline_contact_matrix[i][j] * border_closure_factor
+        vec = (((1 + border_closure_status)/2) * border_closure_factor) +\
+            (1 - ((1 + border_closure_status)/2))
+        contact_matrix = np.transpose(np.multiply(vec, np.transpose(contact_matrix)))
+        baseline_contact_matrix_diag = np.diagonal(baseline_contact_matrix)
+        new_diag = np.multiply(baseline_contact_matrix_diag * lockdown_factor,
+                               (1 + lockdown_status) / 2) +\
+                np.multiply(baseline_contact_matrix_diag, 1 - ((1 + lockdown_status) / 2))
+        np.fill_diagonal(contact_matrix, new_diag)
 
         # Simulate transmission
         if t < T - 1:
