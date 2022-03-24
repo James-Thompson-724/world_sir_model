@@ -81,8 +81,9 @@ number_of_regions = sim.number_of_regions
 
 # -------------------------------------- OPTIMIZATION --------------------------------------------------
 
-# Get the dimensions of the solution matrices in order to concatenate and flatten the solutions
+
 max_doses = sim.population_sizes - sim.vaccine_hesitant
+
 
 # Run one model evaluation with a given solution
 def evaluate(solution):
@@ -144,6 +145,8 @@ population = np.concatenate([init_sol_max_vaccines, init_sol_vaccines_dist, init
 # initial conditions
 best_fitness = 10e10 # best fitness so far
 best_sol = None # best solution so far
+
+# only relevant for differential evolution
 bounds = np.array([[0,1] for i in range(number_of_regions)] + [[0, 1] for i in range(time_horizon_days*number_of_regions)] + [[-1,1] for i in range(time_horizon_days*number_of_regions*2)])
 min_b, max_b = np.asarray(bounds).T
 diff = np.fabs(min_b - max_b)
@@ -240,6 +243,7 @@ for step in range(n_gens):
             new_border_closure = c1
         else:
             new_border_closure = population[0, init:fin]
+        
         
         # stitch back all the solutions
         new_solution = np.concatenate([new_max_vaccinations, new_vaccination_dist, new_lockdown, new_border_closure])
