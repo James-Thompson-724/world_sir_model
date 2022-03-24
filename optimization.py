@@ -131,13 +131,13 @@ if optimize_lockdown:
     init_sol_lockdown = np.random.choice([-1,1], size=(popsize,time_horizon_days*number_of_regions))
 else:
     # change this to define an alternative fixed solution
-    init_sol_lockdown = -1*np.ones((popsize, time_horizon_days*number_of_regions))
+    init_sol_lockdown = np.ones((popsize, time_horizon_days*number_of_regions))
 
 if optimize_lockdown:
     init_sol_border_closure = np.random.choice([-1,1], size=(popsize,time_horizon_days*number_of_regions))
 else:
     # change this to define an alternative fixed solution
-    init_sol_border_closure = -1*np.ones((popsize, time_horizon_days*number_of_regions))
+    init_sol_border_closure = np.ones((popsize, time_horizon_days*number_of_regions))
 
 population = np.concatenate([init_sol_max_vaccines, init_sol_vaccines_dist, init_sol_lockdown, init_sol_border_closure], axis=1)
 
