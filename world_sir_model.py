@@ -281,13 +281,15 @@ def set_initial_cases(regions, number_of_regions, number_of_strains, initial_cas
     initial_cases = np.zeros((number_of_regions, number_of_strains), dtype=int)
     if initial_cases_dict is None:
         for id in len(regions):
-            initial_cases[id] = 1
+            for s in range(number_of_strains):
+                initial_cases[id][s] = 1
     else:
         regions_with_initial_cases = list(initial_cases_dict.keys())
         for region in regions:
             iso = region.iso
             if iso in regions_with_initial_cases:
-                initial_cases[region.id] = initial_cases_dict[iso]
+                for s in range(number_of_strains):
+                    initial_cases[region.id][s] = initial_cases_dict[iso][s]
 
     return initial_cases
 
@@ -502,9 +504,9 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     done = False
     while not done:
 
-        ticks_in_a_day = int(1 / step_size)
+        steps_in_a_day = int(1 / step_size)
 
-        day = t // ticks_in_a_day
+        day = t // steps_in_a_day
 
         # Render
         if render:
@@ -527,19 +529,19 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
                     mouse_input(event, regions, lockdown_status, border_closure_status)
 
         # Update non-pharmacheutical interventions at the end of each day
-        if t % ticks_in_a_day == 0:
+        if t % steps_in_a_day == 0:
             lockdown_status = np.multiply(lockdown_status, lockdown_input[day])
             border_closure_status = np.multiply(border_closure_status, border_closure_input[day])
 
         # Update contact matrix according to non-pharmacheutical interventions
         contact_matrix = copy.deepcopy(baseline_contact_matrix)
         vec = (((1 + border_closure_status)/2) * border_closure_factor) +\
-            (1 - ((1 + border_closure_status)/2))
+              (1 - ((1 + border_closure_status)/2))
         contact_matrix = np.transpose(np.multiply(vec, np.transpose(contact_matrix)))
         baseline_contact_matrix_diag = np.diagonal(baseline_contact_matrix)
         new_diag = np.multiply(baseline_contact_matrix_diag * lockdown_factor,
                                (1 + lockdown_status) / 2) +\
-                np.multiply(baseline_contact_matrix_diag, 1 - ((1 + lockdown_status) / 2))
+                   np.multiply(baseline_contact_matrix_diag, 1 - ((1 + lockdown_status) / 2))
         np.fill_diagonal(contact_matrix, new_diag)
 
         # Simulate transmission
@@ -554,7 +556,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             D[t+1] = D[t] + step_size*np.matmul(np.multiply(I[t], ifr), gamma)
 
             # Update vaccination
-            doses_administered = np.minimum(S[t+1], vaccination_input[day] / ticks_in_a_day)
+            doses_administered = np.minimum(S[t+1], vaccination_input[day] / steps_in_a_day)
             S[t+1] = S[t+1] - doses_administered
             R[t+1] = R[t+1] + doses_administered
             total_doses_administered = round(total_doses_administered + sum(doses_administered))
@@ -595,7 +597,7 @@ config_world =\
         'transmission_probabilities': np.array([0.00035, 0.00035]),
         'removal_rates_per_day': np.array([1 / 9, 1 / 9]),
         'infection_fatality_rate_by_age': np.array([[0.0, 0.001, 0.01], [0.0, 0.001, 0.01]]),
-        'initial_cases_dict': {'CN': 1000},
+        'initial_cases_dict': {'CN': [1000, 1000]},
         'local_travel_prob_per_day': 0.0,
         'distance_threshold': 50,
         'contacts_per_day': 778,

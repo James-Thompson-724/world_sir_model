@@ -1,6 +1,5 @@
 
 import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import copy
 import csv
@@ -10,10 +9,11 @@ import shapefile as shp
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
-from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
 from collections import defaultdict
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 class Region:
     def __init__(self, iso):
@@ -278,19 +278,26 @@ def get_scalar_cmap(cmap, min_val, max_val):
 
     return cmx.ScalarMappable(norm=cNorm, cmap=cm)
 
-def set_initial_cases(regions, number_of_regions, number_of_strains, initial_cases_dict):
+def set_initial_cases(regions, number_of_regions, number_of_strains,
+                      initial_cases_dict, population_sizes):
     """Sets initial case numbers for each region"""
 
-    initial_cases = np.zeros((number_of_regions, number_of_strains), dtype=int)
+    initial_cases = np.zeros((number_of_regions, number_of_strains), dtype=float)
     if initial_cases_dict is None:
         for id in len(regions):
-            initial_cases[id] = 1
+            for s in range(number_of_strains):
+                initial_cases[id][s] = 1
+    elif isinstance(initial_cases_dict, list):
+        for id in range(len(regions)):
+            for s in range(number_of_strains):
+                initial_cases[id][s] = initial_cases_dict[s] / max(population_sizes[id], 1)
     else:
         regions_with_initial_cases = list(initial_cases_dict.keys())
         for region in regions:
             iso = region.iso
             if iso in regions_with_initial_cases:
-                initial_cases[region.id] = initial_cases_dict[iso]
+                for s in range(number_of_strains):
+                    initial_cases[region.id][s] = initial_cases_dict[iso][s]
 
     return initial_cases
 
@@ -320,22 +327,14 @@ def draw_regions(lockdown_status, border_closure_status, prevalence, day, infect
     # Colour borders according to border closure status
     for region in regions:
         id = region.id
-        if lockdown_status[id] == -1 and border_closure_status[id] == 1:
-            if region.list_of_points is not None:
-                for points in region.list_of_points:
-                    pygame.draw.polygon(screen, "gold", points, width=4)
-        if lockdown_status[id] == 1 and border_closure_status[id] == 1:
+        if border_closure_status[id] == 1:
             if region.list_of_points is not None:
                 for points in region.list_of_points:
                     pygame.draw.polygon(screen, "gold", points, width=4)
     # Colour borders according to lockdown status
     for region in regions:
         id = region.id
-        if lockdown_status[id] == 1 and border_closure_status[id] == -1:
-            if region.list_of_points is not None:
-                for points in region.list_of_points:
-                    pygame.draw.polygon(screen, "black", points, width=2)
-        if lockdown_status[id] == 1 and border_closure_status[id] == 1:
+        if lockdown_status[id] == 1:
             if region.list_of_points is not None:
                 for points in region.list_of_points:
                     pygame.draw.polygon(screen, "black", points, width=2)
@@ -364,31 +363,15 @@ def draw_regions(lockdown_status, border_closure_status, prevalence, day, infect
     # Update display
     pygame.display.update()
 
-def mouse_input(event, regions, lockdown_status, border_closure_status):
-    """Records mouse input and updates lockdown and border closure status accordingly"""
-
-    if event.button == 1:
-        # Determine in which region the user has left-clicked
-        for region in regions:
-            if region.multipolygon is not None:
-                if region.multipolygon.contains(Point(event.pos)):
-                    # Flip lockdown status
-                    lockdown_status[region.id] *= -1
-    if event.button == 3:
-        # Determine in which region the user has right-clicked
-        for region in regions:
-            if region.multipolygon is not None:
-                if region.multipolygon.contains(Point(event.pos)):
-                    # Flip border closure status
-                    border_closure_status[region.id] *= -1
-
 def sim_factory(config):
     """Constructs the simulator object"""
 
     display_width             = config['display_width']
     display_height            = config['display_height']
     points_per_polygon        = config['points_per_polygon']
-    cmap                      = config['cmap']
+    infection_cmap            = config['infection_cmap']
+    vaccination_cmap          = config['vaccination_cmap']
+    travel_enabled            = config['international_travel_enabled']
     distance_threshold        = config['distance_threshold']
     local_travel_prob_per_day = config['local_travel_prob_per_day']
     contacts_per_day          = config['contacts_per_day']
@@ -412,26 +395,30 @@ def sim_factory(config):
     add_shape_data(sim.regions, shp_path, points_per_polygon, display_width, display_height)
 
     # Build mixing matrix between regions
-    mixing_prob_matrix = get_mixing_prob_matrix(sim.regions, airport_path, air_travel_path,
-                                                local_travel_prob_per_day, distance_threshold)
+    if travel_enabled:
+        mixing_prob_matrix = get_mixing_prob_matrix(sim.regions, airport_path, air_travel_path,
+                                                    local_travel_prob_per_day, distance_threshold)
+    else:
+        mixing_prob_matrix = np.identity(len(sim.regions), dtype=float)
 
     # Build vector of contacts within each region
     sim.contact_matrix = get_contact_matrix(sim.regions, mixing_prob_matrix, contacts_per_day)
 
     # Build colour map for rendering
-    sim.scalar_cmap = get_scalar_cmap(cmap, 0, 1)
+    sim.infection_cmap = get_scalar_cmap(infection_cmap, 0, 1)
+    sim.vaccination_cmap = get_scalar_cmap(vaccination_cmap, 0, 1)
 
     # Build vector objects
     sim.number_of_regions = len(sim.regions)
     sim.number_of_strains = len(beta)
-    sim.population_sizes = np.zeros((sim.number_of_regions), dtype=int)
-    sim.vaccine_hesitant = np.zeros((sim.number_of_regions), dtype=int)
+    sim.population_sizes = np.zeros((sim.number_of_regions), dtype=np.uint64)
+    sim.vaccine_hesitant = np.zeros((sim.number_of_regions), dtype=np.uint64)
     for region in sim.regions:
         sim.population_sizes[region.id] = region.population_size
         vaccine_hesitancy = np.dot(region.age_distribution, region.vaccine_hesitancy_by_age)
         sim.vaccine_hesitant[region.id] = int(vaccine_hesitancy * region.population_size)
     sim.initial_cases = set_initial_cases(sim.regions, sim.number_of_regions, sim.number_of_strains,
-                                          initial_cases_dict)
+                                          initial_cases_dict, sim.population_sizes)
     sim.ifr = set_ifr(sim.regions, ifr_by_age)
 
     return sim
@@ -440,7 +427,8 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     """Main simulation function"""
 
     render                = config['render']
-    game_input            = config['game_input']
+    save_screeshot        = config['save_screeshot']
+    screenshot_filename   = config['screenshot_filename']
     display_width         = config['display_width']
     display_height        = config['display_height']
     font_size             = config['font_size']
@@ -455,7 +443,8 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
 
     regions                 = sim.regions
     baseline_contact_matrix = sim.contact_matrix
-    scalar_cmap             = sim.scalar_cmap
+    infection_cmap          = sim.infection_cmap
+    vaccination_cmap        = sim.vaccination_cmap
     number_of_regions       = sim.number_of_regions
     number_of_strains       = sim.number_of_strains
     population_sizes        = sim.population_sizes
@@ -501,47 +490,57 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         clock  = pygame.time.Clock()
 
     t = 0
-    total_doses_administered = 0
+    display_data = -1
+    color_map = infection_cmap
+    total_doses_administered = np.zeros((number_of_regions), dtype=np.uint64)
     done = False
     while not done:
 
-        ticks_in_a_day = int(1 / step_size)
+        steps_in_a_day = int(1 / step_size)
 
-        day = t // ticks_in_a_day
+        day = t // steps_in_a_day
         # Render
         if render:
             # Calculate deaths
             infected  = round(np.sum(I[t]))
             deaths = round(np.sum(D[t]))
-            # Calculate prevalence
-            prevalence = {}
-            for region in regions:
-                normalized_prevalence = sum(I[t][region.id])/N[region.id]
-                prevalence[region] = min(normalized_prevalence, max_norm_prev)/ max_norm_prev
-            # Draw regions
-            draw_regions(lockdown_status, border_closure_status, prevalence, day, infected,
-                         deaths, total_doses_administered, screen, font_size, scalar_cmap, regions)
             # Mouse input
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
-                if event.type == pygame.MOUSEBUTTONDOWN and game_input:
-                    mouse_input(event, regions, lockdown_status, border_closure_status)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        display_data *= -1
+            # Calculate prevalence
+            prevalence = {}
+            max_vac_cov = 0.25
+            for region in regions:
+                if display_data == 1:
+                    color_map = infection_cmap
+                    normalized_prevalence = sum(I[t][region.id])/N[region.id]
+                    prevalence[region] = min(normalized_prevalence, max_norm_prev)/ max_norm_prev
+                if display_data == -1:
+                    color_map = vaccination_cmap
+                    coverage = total_doses_administered[region.id]/N[region.id]
+                    prevalence[region] = min(coverage, max_vac_cov)/ max_vac_cov
+            # Draw regions
+            draw_regions(lockdown_status, border_closure_status, prevalence, day, infected, deaths,
+                         np.sum(total_doses_administered), screen, font_size, color_map, regions)
 
         # Update non-pharmacheutical interventions at the end of each day
-        if t % ticks_in_a_day == 0:
-            lockdown_status = np.multiply(lockdown_status, lockdown_input[day])
-            border_closure_status = np.multiply(border_closure_status, border_closure_input[day])
+        if t % steps_in_a_day == 0:
+            lockdown_status = lockdown_input[day]
+            border_closure_status = border_closure_input[day]
 
         # Update contact matrix according to non-pharmacheutical interventions
         contact_matrix = copy.deepcopy(baseline_contact_matrix)
         vec = (((1 + border_closure_status)/2) * border_closure_factor) +\
-            (1 - ((1 + border_closure_status)/2))
+              (1 - ((1 + border_closure_status)/2))
         contact_matrix = np.transpose(np.multiply(vec, np.transpose(contact_matrix)))
         baseline_contact_matrix_diag = np.diagonal(baseline_contact_matrix)
         new_diag = np.multiply(baseline_contact_matrix_diag * lockdown_factor,
                                (1 + lockdown_status) / 2) +\
-                np.multiply(baseline_contact_matrix_diag, 1 - ((1 + lockdown_status) / 2))
+                   np.multiply(baseline_contact_matrix_diag, 1 - ((1 + lockdown_status) / 2))
         np.fill_diagonal(contact_matrix, new_diag)
 
         # Simulate transmission
@@ -556,10 +555,11 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             D[t+1] = D[t] + step_size*np.matmul(np.multiply(I[t], ifr), gamma)
 
             # Update vaccination
-            doses_administered = np.minimum(S[t+1], vaccination_input[day] / ticks_in_a_day)
+            doses_administered = np.minimum(S[t+1], vaccination_input[day] / steps_in_a_day)
             S[t+1] = S[t+1] - doses_administered
             R[t+1] = R[t+1] + doses_administered
-            total_doses_administered = round(total_doses_administered + sum(doses_administered))
+            total_doses_administered =\
+                (total_doses_administered + doses_administered).astype(np.uint64)
 
         # Update step
         t += 1
@@ -570,15 +570,10 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             clock.tick(refresh_rate)
 
     if render:
+        if save_screeshot:
+            pygame.image.save(screen, screenshot_filename)
         pygame.quit()
 
     total_deaths = round(sum(D[t]))
 
     return total_deaths
-
-def cost(total_deaths, lockdown_input, border_closure_input, vaccination_input):
-    """Calculates total cost of a simulation"""
-
-    return total_deaths
-
-

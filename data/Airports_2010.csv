@@ -25,12 +25,12 @@ ABT,Al-Baha,NULL,SA,41.64,20.29
 ABV,Abuja,NULL,NG,7.27,9
 ABX,Albury,NSW,AU,146.95,-36.07
 ABY,Albany,GA,US,-84.2,31.53
-ABZ,Aberdeen,SC,GB,-2.2,57.2
+ABZ,Aberdeen,SC,UK,-2.2,57.2
 ACA,Acapulco,NULL,MX,-99.75,16.76
 ACC,Accra,NULL,GH,-0.17,5.61
 ACE,Lanzarote,CI,ES,-13.61,28.95
 ACH,Altenrhein,NULL,CH,9.57,47.48
-ACI,Alderney,CI,GB,-2.22,49.71
+ACI,Alderney,CI,UK,-2.22,49.71
 ACK,Nantucket,MA,US,-70.06,41.26
 ACP,Sahand,NULL,IR,46.15,37.35
 ACR,Araracuara,NULL,CO,-72.3,-0.38
@@ -261,7 +261,7 @@ BDQ,Vadodara,NULL,IN,73.22,22.33
 BDS,Brindisi,NULL,IT,17.94,40.66
 BDT,Gbadolite,NULL,CD,22.45,4.08
 BDU,Bardufoss,NULL,NO,18.54,69.06
-BEB,Benbecula,SC,GB,-7.38,57.47
+BEB,Benbecula,SC,UK,-7.38,57.47
 BEG,Belgrade,NULL,RS,20.31,44.82
 BEJ,Berau,NULL,ID,117.7,2.17
 BEL,Belem,PA,BR,-48.48,-1.39
@@ -277,7 +277,7 @@ BFI,Seattle,WA,US,-122.3,47.54
 BFL,Bakersfield,CA,US,-119.05,35.43
 BFN,Bloemfontein,NULL,ZA,26.3,-29.1
 BFQ,Bahia Pinas,NULL,PA,-78.17,7.58
-BFS,Belfast,NI,GB,-6.22,54.66
+BFS,Belfast,NI,UK,-6.22,54.66
 BFV,Buri Ram,NULL,TH,103.26,15.23
 BGA,Bucaramanga,NULL,CO,-73.18,7.13
 BGC,Braganca,NULL,PT,-6.75,41.82
@@ -289,7 +289,7 @@ BGR,Bangor,ME,US,-68.82,44.81
 BGW,Baghdad,NULL,IQ,44.23,33.26
 BGY,Milan,NULL,IT,9.7,45.67
 BHB,Bar Harbor,ME,US,-68.36,44.45
-BHD,Belfast,NI,GB,-5.87,54.61
+BHD,Belfast,NI,UK,-5.87,54.61
 BHE,Blenheim,NULL,NZ,173.87,-41.51
 BHG,Brus Laguna,NULL,HN,-84.54,15.73
 BHH,Bisha,NULL,SA,42.62,19.99
@@ -303,7 +303,7 @@ BHR,Bharatpur,NULL,NP,84.43,27.68
 BHS,Bathurst,NSW,AU,149.66,-33.41
 BHU,Bhavnagar,NULL,IN,72.18,21.75
 BHV,Bahawalpur,NULL,PK,71.68,29.4
-BHX,Birmingham,EN,GB,-1.73,52.45
+BHX,Birmingham,EN,UK,-1.73,52.45
 BHY,Beihai,NULL,CN,109.29,21.54
 BIA,Bastia,NULL,FR,9.48,42.55
 BIC,Big Creek,AK,US,-157.52,58.3
@@ -344,7 +344,7 @@ BLD,Boulder City,NV,US,-114.83,35.98
 BLE,Borlange/Falun,NULL,SE,15.51,60.43
 BLI,Bellingham,WA,US,-122.53,48.8
 BLJ,Batna,NULL,DZ,6.18,35.57
-BLK,Blackpool,EN,GB,-3.04,53.78
+BLK,Blackpool,EN,UK,-3.04,53.78
 BLL,Billund,NULL,DK,9.15,55.75
 BLQ,Bologna,NULL,IT,11.29,44.53
 BLR,Bangalore,NULL,IN,77.71,13.2
@@ -372,7 +372,7 @@ BOB,Bora Bora,NULL,PF,-151.75,-16.45
 BOC,Bocas Del Toro,NULL,PA,-82.25,9.34
 BOD,Bordeaux,NULL,FR,-0.7,44.83
 BOG,Bogota,NULL,CO,-74.14,4.7
-BOH,Bournemouth,EN,GB,-1.83,50.78
+BOH,Bournemouth,EN,UK,-1.83,50.78
 BOI,Boise,ID,US,-116.22,43.57
 BOJ,Bourgas,NULL,BG,27.28,42.42
 BOM,Mumbai,NULL,IN,72.87,19.1
@@ -401,8 +401,8 @@ BRM,Barquisimeto,NULL,VE,-69.36,10.05
 BRN,Berne,NULL,CH,7.5,46.91
 BRO,Brownsville,TX,US,-97.42,25.91
 BRQ,Brno,NULL,CZ,16.7,49.15
-BRR,Barra,SC,GB,-7.44,57.02
-BRS,Bristol,EN,GB,-2.71,51.39
+BRR,Barra,SC,UK,-7.44,57.02
+BRS,Bristol,EN,UK,-2.71,51.39
 BRT,Bathurst Island,NT,AU,130.63,-11.77
 BRU,Brussels,NULL,BE,4.48,50.9
 BRW,Barrow,AK,US,-156.78,71.29
@@ -473,7 +473,7 @@ CAG,Cagliari,NULL,IT,9.06,39.25
 CAH,Ca Mau,NULL,VN,105.18,9.18
 CAI,Cairo,NULL,EG,31.41,30.12
 CAK,Akron/Canton,OH,US,-81.44,40.91
-CAL,Campbeltown,SC,GB,-5.69,55.44
+CAL,Campbeltown,SC,UK,-5.69,55.44
 CAN,Guangzhou,NULL,CN,113.3,23.39
 CAP,Cap Haitien,NULL,HT,-72.19,19.73
 CAY,Cayenne,NULL,GF,-52.37,4.82
@@ -506,7 +506,7 @@ CEB,Cebu,NULL,PH,123.98,10.32
 CEC,Crescent City,CA,US,-124.24,41.78
 CED,Ceduna,SA,AU,133.7,-32.12
 CEE,Cherepovets,NULL,RU,38.07,59.28
-CEG,Chester,EN,GB,-2.92,53.17
+CEG,Chester,EN,UK,-2.92,53.17
 CEI,Chiang Rai,NULL,TH,99.88,19.95
 CEK,Chelyabinsk,NULL,RU,61.51,55.3
 CEM,Central,AK,US,-144.78,65.57
@@ -604,7 +604,7 @@ CNX,Chiang Mai,NULL,TH,98.97,18.77
 CNY,Moab,UT,US,-109.75,38.76
 COD,Cody,WY,US,-109.03,44.52
 COK,Kochi,NULL,IN,76.39,10.16
-COL,Coll Island,SC,GB,-6.62,56.62
+COL,Coll Island,SC,UK,-6.62,56.62
 COO,Cotonou,NULL,BJ,2.39,6.35
 COQ,Choibalsan,NULL,MN,114.9,48.13
 COR,Cordoba,CD,AR,-64.21,-31.32
@@ -632,7 +632,7 @@ CRM,Catarman,NULL,PH,124.58,12.48
 CRP,Corpus Christi,TX,US,-97.5,27.77
 CRV,Crotone,NULL,IT,17.08,39
 CRW,Charleston,WV,US,-81.6,38.37
-CSA,Colonsay Island,EN,GB,-6.2,56.08
+CSA,Colonsay Island,EN,UK,-6.2,56.08
 CSG,Columbus,GA,US,-84.94,32.51
 CSH,Solovetsky,NULL,RU,35.73,65.03
 CSX,Changsha,NULL,CN,113.21,28.19
@@ -663,7 +663,7 @@ CVU,Corvo Island (Azores),NULL,PT,-31.1,39.7
 CWA,Wausau,WI,US,-89.67,44.78
 CWB,Curitiba,PR,BR,-49.24,-25.4
 CWC,Chernovtsy,NULL,UA,25.97,48.27
-CWL,Cardiff,WL,GB,-3.34,51.4
+CWL,Cardiff,WL,UK,-3.34,51.4
 CXB,Coxs Bazar,NULL,BD,91.97,21.45
 CXH,Vancouver,BC,CA,-123.12,49.27
 CXI,Christmas Island,NULL,KI,-157.45,1.97
@@ -753,7 +753,7 @@ DME,Moscow,NULL,RU,37.9,55.41
 DMK,Bangkok,NULL,TH,100.61,13.91
 DMM,Dammam,NULL,SA,49.8,26.47
 DMU,Dimapur,NULL,IN,93.77,25.88
-DND,Dundee,SC,GB,-3.01,56.45
+DND,Dundee,SC,UK,-3.01,56.45
 DNH,Dunhuang,NULL,CN,94.68,40.2
 DNK,Dnepropetrovsk,NULL,UA,35.09,48.37
 DNR,Dinard,NULL,FR,-2.08,48.59
@@ -775,7 +775,7 @@ DRO,Durango,CO,US,-107.75,37.16
 DRS,Dresden,NULL,DE,13.77,51.12
 DRT,Del Rio,TX,US,-100.98,29.33
 DRW,Darwin,NT,AU,130.88,-12.41
-DSA,Doncaster,EN,GB,-1.01,53.48
+DSA,Doncaster,EN,UK,-1.01,53.48
 DSK,Dera Ismail Khan,NULL,PK,70.9,31.92
 DSM,Des Moines,IA,US,-93.65,41.53
 DSN,Dongsheng,NULL,CN,110.03,39.85
@@ -815,7 +815,7 @@ EBU,Saint Etienne,NULL,FR,4.3,45.54
 ECN,Ercan,NULL,CY,33.5,35.16
 ECP,Panama City,FL,US,-85.8,30.36
 EDA,Edna Bay,AK,US,-133.67,55.95
-EDI,Edinburgh,SC,GB,-3.36,55.95
+EDI,Edinburgh,SC,UK,-3.36,55.95
 EDL,Eldoret,NULL,KE,35.22,0.41
 EDO,Edremit/Korfez,NULL,TR,27.03,39.58
 EDR,Edward River,QLD,AU,141.62,-14.9
@@ -848,7 +848,7 @@ ELS,East London,NULL,ZA,27.83,-33.04
 ELU,El Oued,NULL,DZ,6.78,33.52
 ELV,Elfin Cove,AK,US,-136.32,58.18
 ELY,Ely,NV,US,-114.84,39.3
-EMA,Leicestershire,EN,GB,-1.33,52.83
+EMA,Leicestershire,EN,UK,-1.33,52.83
 EMD,Emerald,QLD,AU,148.17,-23.57
 EMK,Emmonak,AK,US,-164.52,62.78
 ENA,Kenai,AK,US,-151.25,60.57
@@ -859,7 +859,7 @@ ENI,El Nido,NULL,PH,119.41,11.21
 ENU,Enugu,NULL,NG,7.57,6.47
 ENY,Yanan',NULL,CN,109.55,36.64
 EOH,Medellin,NULL,CO,-75.59,6.22
-EOI,Eday,SC,GB,-2.78,59.18
+EOI,Eday,SC,UK,-2.78,59.18
 EPR,Esperance,WA,AU,121.83,-33.68
 EQS,Esquel,CB,AR,-71.14,-42.91
 ERC,Erzincan,NULL,TR,39.52,39.71
@@ -878,7 +878,7 @@ ESM,Esmeraldas,NULL,EC,-79.63,0.97
 ESR,El Salvador,NULL,CL,-69.77,-26.32
 ESU,Essaouira,NULL,MA,-9.7,31.53
 ETH,Elat,NULL,IL,34.95,29.56
-ETR,Watford ,NULL,GB,-66.15,18.37
+ETR,Watford ,NULL,UK,-66.15,18.37
 ETZ,Metz/Nancy,NULL,FR,6.24,48.98
 EUG,Eugene,OR,US,-123.21,44.12
 EUN,Laayoune,NULL,MA,-13.22,27.13
@@ -892,7 +892,7 @@ EWD,Wildman Lake,AK,US,-159.76,56.46
 EWN,New Bern,NC,US,-77.03,35.08
 EWR,Newark,NJ,US,-74.18,40.69
 EXI,Excursion Inlet,AK,US,-135.45,58.42
-EXT,Exeter,EN,GB,-3.41,50.73
+EXT,Exeter,EN,UK,-3.41,50.73
 EYK,Beloyarsky ,NULL,RU,66.68,63.68
 EYP,El Yopal,NULL,CO,-72.39,5.32
 EYW,Key West,FL,US,-81.76,24.55
@@ -923,7 +923,7 @@ FEZ,Fez,NULL,MA,-4.98,33.93
 FGI,Apia,NULL,WS,-171.73,-13.83
 FGU,"Fangatau, Tuamoto Island",NULL,PF,-141.83,-16.05
 FHZ,Fakahina,NULL,PF,-140.16,-15.99
-FIE,Fair Isle,SC,GB,-1.67,59.5
+FIE,Fair Isle,SC,UK,-1.67,59.5
 FIH,Kinshasa,NULL,CD,15.45,-4.39
 FJR,Al-Fujairah,NULL,AE,56.33,25.11
 FKB,Karlsruhe/Baden Baden,NULL,DE,8.09,48.78
@@ -949,7 +949,7 @@ FNI,Nimes,NULL,FR,4.42,43.75
 FNJ,Pyongyang,NULL,KP,125.67,39.2
 FNL,Fort Collins/Loveland,CO,US,-105.08,40.58
 FNT,Flint,MI,US,-83.74,42.97
-FOA,Foula,SI,GB,-2.08,60.17
+FOA,Foula,SI,UK,-2.08,60.17
 FOC,Fuzhou,NULL,CN,119.67,25.93
 FOD,Fort Dodge,IA,US,-94.19,42.55
 FOG,Foggia,NULL,IT,15.54,41.43
@@ -981,7 +981,7 @@ FUO,Fuoshan,NULL,CN,113.28,23.13
 FUT,Futuna Island,NULL,WF,-178.15,-14.25
 FWA,Fort Wayne,IN,US,-85.19,40.99
 FYU,Fort Yukon,AK,US,-145.25,66.57
-FZO,Filton,SC,GB,-2.58,51.52
+FZO,Filton,SC,UK,-2.58,51.52
 GAE,Gabes,NULL,TN,10.03,33.88
 GAF,Gafsa,NULL,TN,8.82,34.42
 GAJ,Yamagata,NULL,JP,140.37,38.41
@@ -995,7 +995,7 @@ GBD,Great Bend,KS,US,-98.86,38.35
 GBE,Gaborone,NULL,BW,25.92,-24.56
 GBT,Gorgon,NULL,IR,54.41,36.91
 GCC,Gillette,WY,US,-105.53,44.35
-GCI,Guernsey,CI,GB,-2.6,49.43
+GCI,Guernsey,CI,UK,-2.6,49.43
 GCK,Garden City,KS,US,-100.73,37.93
 GCM,Grand Cayman Island,NULL,KY,-81.36,19.3
 GCN,Grand Canyon,AZ,US,-112.15,35.95
@@ -1035,12 +1035,12 @@ GJA,Guanaja,NULL,HN,-85.91,16.45
 GJL,Jijel,NULL,DZ,5.88,36.8
 GJT,Grand Junction,CO,US,-108.53,39.12
 GKA,Goroka,NULL,PG,145.39,-6.08
-GLA,Glasgow,SC,GB,-4.43,55.86
+GLA,Glasgow,SC,UK,-4.43,55.86
 GLF,Golfito,NULL,CR,-83.18,8.65
 GLH,Greenville,MS,US,-90.98,33.48
 GLK,Galcaio,NULL,SO,47.43,6.77
 GLN,Goulimime,NULL,MA,-10.07,29.02
-GLO,Gloucester,EN,GB,-2.23,51.88
+GLO,Gloucester,EN,UK,-2.23,51.88
 GLT,Gladstone,QLD,AU,151.22,-23.87
 GLV,Golovin,AK,US,-163.04,64.54
 GMA,Gemena,NULL,CD,19.77,3.23
@@ -1226,7 +1226,7 @@ HUS,Hughes,AK,US,-154.26,66.04
 HUU,Huanuco,NULL,PE,-76.22,-9.87
 HUW,Humaita ,NULL,BR,-63.07,-7.53
 HUX,Huatulco,NULL,MX,-96.24,15.77
-HUY,Humberside,EN,GB,-0.35,53.58
+HUY,Humberside,EN,UK,-0.35,53.58
 HVB,Hervey Bay,QLD,AU,152.89,-25.32
 HVD,Khovd,NULL,MN,91.65,48.02
 HVG,Honningsvag,NULL,NO,25.83,70.98
@@ -1276,7 +1276,7 @@ ILI,Iliamna,AK,US,-154.91,59.75
 ILM,Wilmington,NC,US,-77.91,34.27
 ILO,Iloilo,NULL,PH,122.54,10.71
 ILP,Ile Des Pins,NULL,NC,167.45,-22.59
-ILY,Islay,SC,GB,-6.25,55.68
+ILY,Islay,SC,UK,-6.25,55.68
 ILZ,Zilina,NULL,SK,18.77,49.23
 IMF,Imphal,NULL,IN,93.9,24.76
 IMK,Simikot,NULL,NP,81.82,29.97
@@ -1290,10 +1290,10 @@ INL,International Falls,MN,US,-93.4,48.56
 INN,Innsbruck,NULL,AT,11.35,47.26
 INT,Winston-Salem,NC,US,-80.23,36.14
 INU,Nauru Island,NULL,NR,166.92,-0.53
-INV,Inverness,SC,GB,-4.06,57.54
+INV,Inverness,SC,UK,-4.06,57.54
 INZ,In Salah,NULL,DZ,2.52,27.25
 IOA,Ioannina,NULL,GR,20.83,39.7
-IOM,Isle Of Man,NULL,GB,-4.63,54.09
+IOM,Isle Of Man,NULL,UK,-4.63,54.09
 IOS,Ilheus,BA,BR,-39.03,-14.81
 IPA,Ipota,NULL,VU,169.18,-18.75
 IPC,Easter Island,NULL,CL,-109.37,-27.12
@@ -1314,7 +1314,7 @@ IRM,Igrim ,NULL,RU,64.42,63.2
 IRZ,Rio Negro,NULL,BR,-65.02,-0.41
 ISA,Mount Isa,QLD,AU,139.49,-20.67
 ISB,Islamabad,NULL,PK,73.11,33.61
-ISC,Isles Of Scilly,EN,GB,-6.29,49.91
+ISC,Isles Of Scilly,EN,UK,-6.29,49.91
 ISE,Isparta,NULL,TR,30.38,37.87
 ISG,Ishigaki,NULL,JP,124.17,24.34
 ISK,Nasik,NULL,IN,73.81,19.97
@@ -1372,7 +1372,7 @@ JDR,Sao Joao del Rei,NULL,BR,-44.23,-21.09
 JDZ,Jingdezhen,NULL,CN,117.18,29.34
 JED,Jeddah,NULL,SA,39.15,21.67
 JEG,Aasiaat,NULL,GL,-52.75,68.7
-JER,Jersey,CI,GB,-2.19,49.21
+JER,Jersey,CI,UK,-2.19,49.21
 JFK,New York,NY,US,-73.79,40.64
 JFR,Paamiut,NULL,GL,-49.7,62
 JGA,Jamnagar,NULL,IN,70.01,22.46
@@ -1568,7 +1568,7 @@ KNX,Kununurra,WA,AU,128.71,-15.78
 KOA,Kona,HI,US,-156.04,19.74
 KOC,Koumac,NULL,NC,164.42,-20.5
 KOE,Kupang,NULL,ID,123.67,-10.17
-KOI,Kirkwall,SC,GB,-2.97,58.96
+KOI,Kirkwall,SC,UK,-2.97,58.96
 KOJ,Kagoshima,NULL,JP,130.72,31.8
 KOK,Kokkola/Pietarsaari,NULL,FI,23.13,63.72
 KOP,Nakhon Phanom,NULL,TH,104.75,17.4
@@ -1677,7 +1677,7 @@ LAS,Las Vegas,NV,US,-115.15,36.09
 LAU,Lamu,NULL,KE,40.91,-2.25
 LAW,Lawton,OK,US,-98.42,34.57
 LAX,Los Angeles,CA,US,-118.41,33.94
-LBA,Leeds,EN,GB,-1.66,53.87
+LBA,Leeds,EN,UK,-1.66,53.87
 LBB,Lubbock,TX,US,-101.82,33.66
 LBC,Hamburg,NULL,DE,10.7,53.81
 LBD,Khudzhand,NULL,TJ,69.7,40.22
@@ -1697,7 +1697,7 @@ LCH,Lake Charles,LA,US,-93.23,30.13
 LCJ,Lodz,NULL,PL,19.4,51.72
 LCR,La Chorrera,NULL,CO,-73.02,-0.73
 LCX,Longyan,NULL,CN,116.75,25.68
-LCY,London,EN,GB,0.05,51.5
+LCY,London,EN,UK,0.05,51.5
 LDB,Londrina,PR,BR,-51.14,-23.33
 LDE,Lourdes,NULL,FR,0,43.19
 LDG,Leshukonskoye,NULL,RU,45.75,64.9
@@ -1705,7 +1705,7 @@ LDH,Lord Howe Island,NSW,AU,159.08,-31.54
 LDN,Lamidanda,NULL,NP,86.72,27.25
 LDS,Yichun ,NULL,CN,128.83,47.72
 LDU,Lahad Datu,NULL,MY,118.33,5.04
-LDY,Londonderry,NI,GB,-7.16,55.04
+LDY,Londonderry,NI,UK,-7.16,55.04
 LEA,Learmonth,WA,AU,114.09,-22.24
 LEB,Lebanon,NH,US,-72.31,43.63
 LEC,Lencois,BA,BR,-41.28,-12.48
@@ -1714,7 +1714,7 @@ LEH,Le Havre,NULL,FR,0.09,49.54
 LEI,Almeria,SP,ES,-2.37,36.85
 LEJ,Leipzig/Halle,NULL,DE,12.22,51.42
 LEN,Leon,SP,ES,-5.65,42.59
-LEQ,Lands End,EN,GB,-5.73,50.05
+LEQ,Lands End,EN,UK,-5.73,50.05
 LET,Leticia,NULL,CO,-69.94,-4.2
 LEV,Bureta,NULL,FJ,178.83,-17.68
 LEX,Lexington,KY,US,-84.6,38.04
@@ -1729,9 +1729,9 @@ LGK,Langkawi,NULL,MY,99.73,6.34
 LGL,Long Lellang,NULL,MY,114.25,4.18
 LGP,Legaspi,NULL,PH,123.73,13.15
 LGQ,Lago Agrio,NULL,EC,-76.88,0.1
-LGW,London,EN,GB,-0.16,51.16
+LGW,London,EN,UK,-0.16,51.16
 LHE,Lahore,NULL,PK,74.4,31.52
-LHR,London,EN,GB,-0.45,51.47
+LHR,London,EN,UK,-0.45,51.47
 LHW,Lanzhou,NULL,CN,103.87,36.03
 LIF,Lifou,NULL,NC,167.25,-20.77
 LIG,Limoges,NULL,FR,1.18,45.86
@@ -1785,7 +1785,7 @@ LPB,La Paz,NULL,BO,-68.18,-16.51
 LPD,La Pedrera,NULL,CO,-69.72,-1.3
 LPI,Linkoping,NULL,SE,15.52,58.4
 LPK,Lipetsk,NULL,RU,39.6,52.62
-LPL,Liverpool,EN,GB,-2.85,53.34
+LPL,Liverpool,EN,UK,-2.85,53.34
 LPM,Lamap,NULL,VU,167.82,-16.47
 LPP,Lappeenranta,NULL,FI,28.16,61.05
 LPQ,Luang Prabang,NULL,LA,102.16,19.9
@@ -1805,7 +1805,7 @@ LSA,Losuia,NULL,PG,151.03,-8.36
 LSC,La Serena,NULL,CL,-71.2,-29.92
 LSE,La Crosse,WI,US,-91.26,43.88
 LSH,Lashio,NULL,MM,97.75,22.97
-LSI,Shetland Islands,SC,GB,-1.29,59.88
+LSI,Shetland Islands,SC,UK,-1.29,59.88
 LSP,Las Piedras,NULL,VE,-70.15,11.78
 LST,Launceston,TAS,AU,147.21,-41.54
 LSW,Lhoksumawe,NULL,ID,97.17,5.17
@@ -1813,7 +1813,7 @@ LSY,Lismore,NSW,AU,153.26,-28.84
 LTD,Ghadames,NULL,LY,9.51,30.13
 LTI,Altai,NULL,MN,96.42,46.65
 LTK,Latakia,NULL,SY,35.94,35.41
-LTN,London,EN,GB,-0.38,51.88
+LTN,London,EN,UK,-0.38,51.88
 LTO,Loreto,NULL,MX,-111.35,25.98
 LTQ,Le Touquet,NULL,FR,1.63,50.52
 LTU,Latur ,NULL,IN,76.46,18.41
@@ -1832,7 +1832,7 @@ LUX,Luxembourg,NULL,LU,6.21,49.63
 LVI,Livingstone,NULL,ZM,25.82,-17.82
 LWB,Lewisburg,WV,US,-80.4,37.86
 LWE,Lewoleba,NULL,ID,123.37,-8.5
-LWK,Shetland Islands,SC,GB,-1.15,60.15
+LWK,Shetland Islands,SC,UK,-1.15,60.15
 LWN,Gyoumri,NULL,AM,43.83,40.72
 LWO,Lviv,NULL,UA,23.96,49.82
 LWS,Lewiston,ID,US,-117.01,46.37
@@ -1851,7 +1851,7 @@ LYI,Linyi,NULL,CN,118.41,35.05
 LYP,Faisalabad,NULL,PK,72.99,31.36
 LYR,Longyearbyen,NULL,SJ,15.8,78.21
 LYS,Lyon,NULL,FR,5.08,45.72
-LYX,Lydd,EN,GB,0.93,50.95
+LYX,Lydd,EN,UK,0.93,50.95
 LZC,Lazaro Cardenas,NULL,MX,-102.22,18
 LZH,Liuzhou,NULL,CN,109.4,24.21
 LZN,Nangan,NULL,CN,119.96,26.16
@@ -1866,7 +1866,7 @@ MAH,Menorca,SP,ES,4.23,39.86
 MAJ,Majuro,NULL,MH,171.28,7.07
 MAK,Malakal,NULL,SD,31.64,9.56
 MAM,Matamoros,NULL,MX,-97.52,25.77
-MAN,Manchester,EN,GB,-2.27,53.36
+MAN,Manchester,EN,UK,-2.27,53.36
 MAO,Manaus,AM,BR,-60.05,-3.03
 MAR,Maracaibo,NULL,VE,-71.72,10.56
 MAS,Manus Island,NULL,PG,147.42,-2.06
@@ -1979,7 +1979,7 @@ MLW,Monrovia,NULL,LR,-10.76,6.29
 MLX,Malatya,NULL,TR,38.25,38.35
 MLY,Manley Hot Springs,AK,US,-150.64,65
 MMB,Memanbetsu,NULL,JP,144.17,43.9
-MME,Durham Tees Valley,EN,GB,-1.43,54.51
+MME,Durham Tees Valley,EN,UK,-1.43,54.51
 MMH,Mammoth Lakes,CA,US,-118.85,37.63
 MMJ,Matsumoto,NULL,JP,137.97,36.23
 MMK,Murmansk,NULL,RU,32.76,68.79
@@ -2033,7 +2033,7 @@ MRX,Bandar Mahshahr,NULL,IR,49.17,30.54
 MRY,Monterey,CA,US,-121.85,36.59
 MRZ,Moree,NSW,AU,149.85,-29.5
 MSA,Muskrat Dam,ON,CA,-91.98,53.82
-MSE,Manston,EN,GB,1.35,51.35
+MSE,Manston,EN,UK,1.35,51.35
 MSJ,Misawa,NULL,JP,141.39,40.7
 MSL,Muscle Shoals,AL,US,-87.62,34.75
 MSN,Madison,WI,US,-89.35,43.14
@@ -2127,7 +2127,7 @@ NBW,Guantanamo,NULL,CU,-75.23,20.17
 NBX,Nabire,NULL,ID,135.43,-3.37
 NCA,North Caicos,NULL,TC,-71.98,21.93
 NCE,Nice,NULL,FR,7.21,43.66
-NCL,Newcastle,EN,GB,-1.71,55.04
+NCL,Newcastle,EN,UK,-1.71,55.04
 NCU,Nukus,NULL,UZ,59.63,42.48
 NCY,Annecy,NULL,FR,6.1,45.93
 NDB,Nouadhibou,NULL,MR,-17.03,20.93
@@ -2136,7 +2136,7 @@ NDE,Mandera,NULL,KE,41.87,3.93
 NDG,Qiqihar,NULL,CN,123.92,47.32
 NDJ,Ndjamena,NULL,TD,15.03,12.13
 NDR,Nador,NULL,MA,-2.92,35.15
-NDY,Sanday,SC,GB,-2.58,59.25
+NDY,Sanday,SC,UK,-2.58,59.25
 NER,Neryungri,NULL,RU,124.6,56.65
 NEV,Nevis,NULL,KN,-62.59,17.2
 NGB,Ningbo,NULL,CN,121.46,29.82
@@ -2180,11 +2180,11 @@ NPE,Napier,NULL,NZ,176.87,-39.47
 NPL,New Plymouth,NULL,NZ,174.18,-39.01
 NQN,Neuquen,NE,AR,-68.15,-38.95
 NQU,Nuqui,NULL,CO,-77.28,5.7
-NQY,Newquay,EN,GB,-5,50.44
+NQY,Newquay,EN,UK,-5,50.44
 NRA,Narrandera,NSW,AU,146.51,-34.71
 NRD,Norderney,NULL,DE,7.17,53.83
 NRK,Norrkoping,NULL,SE,16.23,58.58
-NRL,North Ronaldsay,SC,GB,-2.43,59.37
+NRL,North Ronaldsay,SC,UK,-2.43,59.37
 NRN,Dusseldorf,NULL,DE,6.15,51.6
 NRT,Tokyo,NULL,JP,140.39,35.77
 NSH,Now Shahr,NULL,IR,51.5,36.67
@@ -2209,7 +2209,7 @@ NVA,Neiva,NULL,CO,-75.3,2.95
 NVI,Navoi,NULL,UZ,65.16,40.12
 NVK,Narvik,NULL,NO,17.43,68.42
 NVT,Navegantes,SC,BR,-48.63,-26.87
-NWI,Norwich,EN,GB,1.28,52.67
+NWI,Norwich,EN,UK,1.28,52.67
 NYA,Nyagan ,NULL,RU,65.4,62.15
 NYI,Sunyani,NULL,GH,-2.33,7.33
 NYK,Nanyuki,NULL,KE,37.07,0.02
@@ -2223,7 +2223,7 @@ OAJ,Jacksonville,NC,US,-77.61,34.83
 OAK,Oakland,CA,US,-122.21,37.71
 OAX,Oaxaca,NULL,MX,-96.72,17
 OAZ,Lashkar Gah,NULL,AF,64.22,31.86
-OBN,Oban,SC,GB,-5.4,56.47
+OBN,Oban,SC,UK,-5.4,56.47
 OBO,Obihiro,NULL,JP,143.21,42.73
 OBU,Kobuk,AK,US,-156.88,66.91
 OBX,Obo,NULL,PG,141.32,-7.58
@@ -2297,7 +2297,7 @@ OTP,Bucharest,NULL,RO,26.08,44.57
 OTZ,Kotzebue,AK,US,-162.61,66.89
 OUA,Ouagadougou,NULL,BF,-1.51,12.36
 OUD,Oujda,NULL,MA,-1.93,34.78
-OUK,Outer Skerries,SI,GB,-0.75,60.42
+OUK,Outer Skerries,SI,UK,-0.75,60.42
 OUL,Oulu,NULL,FI,25.38,64.93
 OUZ,Zouerate,NULL,MR,-12.35,22.73
 OVB,Novosibirsk,NULL,RU,82.67,55.01
@@ -2380,7 +2380,7 @@ PIB,Laurel,MS,US,-89.34,31.47
 PIE,Saint Petersburg,FL,US,-82.7,27.91
 PIF,Pingtung,NULL,TW,120.49,22.71
 PIH,Pocatello,ID,US,-112.59,42.91
-PIK,Glasgow,SC,GB,-4.61,55.51
+PIK,Glasgow,SC,UK,-4.61,55.51
 PIN,Parintins,NULL,BR,-56.77,-2.67
 PIO,Pisco,NULL,PE,-76.22,-13.75
 PIP,Pilot Point,AK,US,-157.56,57.56
@@ -2406,7 +2406,7 @@ PKV,Pskov,NULL,RU,28.3,57.82
 PKY,Palangkaraya,NULL,ID,113.95,-2.22
 PKZ,Pakse,NULL,LA,105.78,15.14
 PLD,Playa Samara,NULL,CR,-85.42,10.25
-PLH,Plymouth,EN,GB,-4.11,50.42
+PLH,Plymouth,EN,UK,-4.11,50.42
 PLJ,Placencia,NULL,BZ,-88.35,16.53
 PLM,Palembang,NULL,ID,104.7,-2.9
 PLN,Pellston,MI,US,-84.79,45.57
@@ -2462,7 +2462,7 @@ PPP,Proserpine,QLD,AU,148.55,-20.49
 PPS,Puerto Princesa,NULL,PH,118.76,9.74
 PPT,Papeete,NULL,PF,-149.61,-17.56
 PPV,Port Protection,AK,US,-133.67,56.33
-PPW,Papa Westray,SC,GB,-2.9,59.42
+PPW,Papa Westray,SC,UK,-2.9,59.42
 PQC,Phu Quoc,NULL,VN,103.96,10.22
 PQI,Presque Isle,ME,US,-68.05,46.69
 PQQ,Port Macquarie,NSW,AU,152.87,-31.43
@@ -2479,7 +2479,7 @@ PSO,Pasto,NULL,CO,-77.25,1.47
 PSP,Palm Springs,CA,US,-116.51,33.82
 PSR,Pescara,NULL,IT,14.19,42.43
 PSS,Posadas,MI,AR,-55.97,-27.38
-PSV,Papa Stour,SI,GB,-1.7,60.32
+PSV,Papa Stour,SI,UK,-1.7,60.32
 PSZ,Puerto Suarez,NULL,BO,-57.8,-18.97
 PTA,Port Alsworth,AK,US,-145.33,60.2
 PTG,Polokwane,NULL,ZA,29.97,-23.92
@@ -2518,7 +2518,7 @@ PYH,Puerto Ayacucho,NULL,VE,-67.5,5.6
 PYJ,Polyarnyj,NULL,RU,112.05,66.42
 PYY,Pai ,NULL,TH,98.44,19.36
 PZB,Pietermaritzburg,NULL,ZA,30.4,-29.64
-PZE,Penzance,EN,GB,-5.52,50.11
+PZE,Penzance,EN,UK,-5.52,50.11
 PZH,Zhob,NULL,PK,69.5,31.33
 PZI,Pan Zhi Hua,NULL,CN,101.79,26.54
 PZO,Puerto Ordaz,NULL,VE,-62.76,8.29
@@ -2704,7 +2704,7 @@ SDV,Tel Aviv-Yafo,NULL,IL,34.79,32.1
 SDY,Sidney,MT,US,-104.19,47.71
 SEA,Seattle,WA,US,-122.3,47.44
 SEB,Sebha,NULL,LY,14.46,27.02
-SEN,Southend,EN,GB,0.7,51.57
+SEN,Southend,EN,UK,0.7,51.57
 SEU,Seronera,NULL,TZ,34.82,-2.38
 SEY,Selibaby,NULL,MR,-12.21,15.18
 SEZ,Mahe Island,NULL,SC,55.51,-4.67
@@ -2814,10 +2814,10 @@ SOG,Sogndal,NULL,NO,7.14,61.16
 SOJ,Sorkjosen,NULL,NO,20.93,69.78
 SON,Espiritu Santo,NULL,VU,167.22,-15.51
 SOQ,Sorong,NULL,ID,131.29,-0.89
-SOU,Southampton,EN,GB,-1.36,50.95
+SOU,Southampton,EN,UK,-1.36,50.95
 SOV,Seldovia,AK,US,-151.7,59.44
 SOW,Show Low,AZ,US,-110,34.26
-SOY,Stronsay,SC,GB,-2.63,59.13
+SOY,Stronsay,SC,UK,-2.63,59.13
 SPB,Saint Thomas,NULL,VI,-64.92,18.35
 SPC,Santa Cruz De La Palma,CI,ES,-17.76,28.63
 SPI,Springfield,IL,US,-89.68,39.84
@@ -2850,7 +2850,7 @@ STG,Saint George Island,AK,US,-169.55,56.6
 STI,Santiago,NULL,DO,-70.6,19.4
 STL,Saint Louis,MO,US,-90.37,38.74
 STM,Santarem,PA,BR,-54.79,-2.42
-STN,London,EN,GB,0.26,51.89
+STN,London,EN,UK,0.26,51.89
 STR,Stuttgart,NULL,DE,9.19,48.69
 STS,Santa Rosa,CA,US,-122.81,38.51
 STT,Saint Thomas,NULL,VI,-64.97,18.34
@@ -2901,7 +2901,7 @@ SYO,Shonai,NULL,JP,139.79,38.81
 SYQ,San Jose,NULL,CR,-84.13,9.95
 SYR,Syracuse,NY,US,-76.11,43.11
 SYX,Sanya,NULL,CN,109.41,18.31
-SYY,"Stornoway, Outer Stat Hebrides",NULL,GB,-6.32,58.21
+SYY,"Stornoway, Outer Stat Hebrides",NULL,UK,-6.32,58.21
 SYZ,Shiraz,NULL,IR,52.59,29.55
 SZB,Kuala Lumpur,NULL,MY,101.56,3.13
 SZF,Samsun,NULL,TR,36.56,41.26
@@ -3060,7 +3060,7 @@ TQL,Tarko-Sale ,NULL,RU,77.79,64.92
 TQR,San Domino Island,NULL,IT,15.48,42.12
 TRC,Torreon,NULL,MX,-103.4,25.56
 TRD,Trondheim,NULL,NO,10.92,63.45
-TRE,"Tiree, Inner Hebrides",NULL,GB,-6.87,56.5
+TRE,"Tiree, Inner Hebrides",NULL,UK,-6.87,56.5
 TRF,Oslo,NULL,NO,10.25,59.18
 TRG,Tauranga,NULL,NZ,176.2,-37.67
 TRI,"Bristol, VA/Johnson City/Kingsport",TN,US,-82.41,36.48
@@ -3077,7 +3077,7 @@ TSE,Astana,NULL,KZ,71.46,51.03
 TSF,Venice,NULL,IT,12.21,45.66
 TSJ,Tsushima,NULL,JP,129.33,34.29
 TSN,Tianjin,NULL,CN,117.34,39.12
-TSO,Isles Of Scilly,EN,GB,-6.33,49.95
+TSO,Isles Of Scilly,EN,UK,-6.33,49.95
 TSR,Timisoara,NULL,RO,21.32,45.81
 TST,Trang,NULL,TH,99.62,7.5
 TSV,Townsville,QLD,AU,146.77,-19.26
@@ -3250,7 +3250,7 @@ VLI,Port Vila,NULL,VU,168.32,-17.7
 VLL,Valladolid,SP,ES,-4.84,41.71
 VLN,Valencia,NULL,VE,-67.92,10.15
 VLS,Valesdir,NULL,VU,168.2,-16.8
-VLY,Anglesey,NULL,GB,-4.53,53.25
+VLY,Anglesey,NULL,UK,-4.53,53.25
 VNO,Vilnius,NULL,LT,25.28,54.64
 VNS,Varanasi,NULL,IN,82.85,25.45
 VNX,Vilanculos,NULL,MZ,35.28,-22.02
@@ -3296,7 +3296,7 @@ WEI,Weipa,QLD,AU,141.92,-12.68
 WGA,Wagga Wagga,NSW,AU,147.47,-35.16
 WGP,Waingapu,NULL,ID,120.3,-9.67
 WHK,Whakatane,NULL,NZ,176.92,-37.92
-WIC,Wick,SC,GB,-3.09,58.46
+WIC,Wick,SC,UK,-3.09,58.46
 WIL,Nairobi,NULL,KE,36.81,-1.32
 WIN,Winton,QLD,AU,143.07,-22.35
 WJR,Wajir,NULL,KE,40.6,1.77
@@ -3324,7 +3324,7 @@ WRE,Whangarei,NULL,NZ,174.36,-35.77
 WRG,Wrangell,AK,US,-132.37,56.48
 WRL,Worland,WY,US,-107.95,43.97
 WRO,Wroclaw,NULL,PL,16.9,51.1
-WRY,Westray,SC,GB,-2.95,59.35
+WRY,Westray,SC,UK,-2.95,59.35
 WSN,South Naknek,AK,US,-156.93,58.72
 WST,Westerly,RI,US,-71.81,41.35
 WSZ,Westport,NULL,NZ,171.58,-41.74
