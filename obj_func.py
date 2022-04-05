@@ -24,7 +24,7 @@ class Region:
         self.colour = None
         self.population_size = None
         self.age_distribution = None
-        self.vaccine_hesitancy_by_age = None
+        self.vaccine_hesitancy = None
 
 class Simulator:
     def __init__(self, config):
@@ -68,15 +68,15 @@ def add_population_data(regions, regions_data_path):
             iso = str(row[1])
             population_size = int(row[2])
             age_distribution = [float(row[3]), float(row[4]), float(row[5])]
-            vaccine_hesitancy_by_age = [float(row[6]), float(row[7]), float(row[8])]
+            vaccine_hesitancy = float(row[6])
             population_data_dict[iso]['population_size'] = population_size
             population_data_dict[iso]['age_distribution'] = age_distribution
-            population_data_dict[iso]['vaccine_hesitancy_by_age'] = vaccine_hesitancy_by_age
+            population_data_dict[iso]['vaccine_hesitancy'] = vaccine_hesitancy
     for region in regions:
         iso = region.iso
         region.population_size = population_data_dict[iso]['population_size']
         region.age_distribution = population_data_dict[iso]['age_distribution']
-        region.vaccine_hesitancy_by_age = population_data_dict[iso]['vaccine_hesitancy_by_age']
+        region.vaccine_hesitancy = population_data_dict[iso]['vaccine_hesitancy']
 
 def add_shape_data(regions, regions_shape_path, points_per_polygon,
                    display_width, display_height):
@@ -290,7 +290,8 @@ def set_initial_cases(regions, number_of_regions, number_of_strains,
     elif isinstance(initial_cases_dict, list):
         for id in range(len(regions)):
             for s in range(number_of_strains):
-                initial_cases[id][s] = initial_cases_dict[s] / max(population_sizes[id], 1)
+                initial_cases[id][s] = initial_cases_dict[s] *\
+                                       (population_sizes[id] / np.sum(population_sizes))
     else:
         regions_with_initial_cases = list(initial_cases_dict.keys())
         for region in regions:
@@ -415,7 +416,7 @@ def sim_factory(config):
     sim.vaccine_hesitant = np.zeros((sim.number_of_regions), dtype=np.uint64)
     for region in sim.regions:
         sim.population_sizes[region.id] = region.population_size
-        vaccine_hesitancy = np.dot(region.age_distribution, region.vaccine_hesitancy_by_age)
+        vaccine_hesitancy = region.vaccine_hesitancy
         sim.vaccine_hesitant[region.id] = int(vaccine_hesitancy * region.population_size)
     sim.initial_cases = set_initial_cases(sim.regions, sim.number_of_regions, sim.number_of_strains,
                                           initial_cases_dict, sim.population_sizes)
@@ -513,7 +514,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
                         display_data *= -1
             # Calculate prevalence
             prevalence = {}
-            max_vac_cov = 0.25
+            max_vac_cov = 1.0
             for region in regions:
                 if display_data == 1:
                     color_map = infection_cmap
@@ -545,6 +546,15 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
 
         # Simulate transmission
         if t < T - 1:
+
+            # Vaccinate
+            doses_administered = np.minimum(S[t], vaccination_input[day] / steps_in_a_day)
+            S[t] = S[t] - doses_administered
+            R[t] = R[t] + doses_administered
+            total_doses_administered =\
+                (total_doses_administered + doses_administered).astype(np.uint64)
+
+            # Transmission
             A = np.matmul(contact_matrix, np.multiply(I[t], N_bar))
             S[t+1] = S[t] - step_size*np.multiply(np.matmul(A, beta), S[t])
             H[t+1] = H[t] - step_size*np.multiply(np.matmul(A, beta), H[t])
@@ -553,13 +563,6 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             R[t+1] = R[t] + step_size*np.matmul(np.multiply(I[t],
                                                 np.ones(np.shape(I[t])) - ifr), gamma)
             D[t+1] = D[t] + step_size*np.matmul(np.multiply(I[t], ifr), gamma)
-
-            # Update vaccination
-            doses_administered = np.minimum(S[t+1], vaccination_input[day] / steps_in_a_day)
-            S[t+1] = S[t+1] - doses_administered
-            R[t+1] = R[t+1] + doses_administered
-            total_doses_administered =\
-                (total_doses_administered + doses_administered).astype(np.uint64)
 
         # Update step
         t += 1
