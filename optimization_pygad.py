@@ -45,11 +45,139 @@ config_sim =\
 
 sim = sim_factory(config_sim)
 
+def run_baseline(sim):
+    """Runs baseline scenario"""
+
+    time_horizon_days = sim.config['time_horizon_days']
+    number_of_regions = sim.number_of_regions
+
+    lockdown_input       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_input = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    vaccination_input    = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_input, border_closure_input, vaccination_input)
+
+    return total_deaths
+
+baseline_cost = run_baseline(sim)
+
 # -------------------------------------- FITNESS FUNCTIONS -----------------------------------------
 
 time_horizon_days = sim.config['time_horizon_days']
 number_of_regions = sim.number_of_regions
 population_sizes  = sim.population_sizes
+
+def fitness_func_full(solution, solution_idx):
+    """Lockdown and border closure for certain periods of time. This function requires
+    num_genes=number_of_regions * 3."""
+
+    TOTAL_DOSES = 1000000000
+    VACCINATION_RATE = 0.005
+
+    vaccination_rate = np.full((number_of_regions), VACCINATION_RATE, dtype=float)
+
+    sol = solution[0:number_of_regions]
+    share = np.absolute(sol)
+    share = ((share / np.sum(share)) * TOTAL_DOSES).astype(np.uint64)
+
+    num_can_vaccinate_each_day = (np.multiply(vaccination_rate, population_sizes)).astype(int)
+
+    days_required = np.floor_divide(share, num_can_vaccinate_each_day).astype(int)
+    num_vaccinated_last_day = np.mod(share, num_can_vaccinate_each_day).astype(int)
+
+    vaccination_sol = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
+    for r in range(number_of_regions):
+        for t in range(time_horizon_days):
+            if t < days_required[r]:
+                vaccination_sol[t][r] = num_can_vaccinate_each_day[r]
+            if t == days_required[r]:
+                vaccination_sol[t][r] = num_vaccinated_last_day[r]
+
+    LEN_NPI_PERIOD = 28
+
+    sol = solution[number_of_regions:]
+    solution_mod = np.mod(sol.astype(int), time_horizon_days)
+    npi_sol = solution_mod.reshape((number_of_regions, 2))
+
+    lockdown_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        start_day_lockdown = npi_sol[r][0]
+        end_day_lockdown = min(start_day_lockdown + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_lockdown, end_day_lockdown):
+            lockdown_sol[day][r] = 1
+        start_day_border_closure = npi_sol[r][1]
+        end_day_border_closure = min(start_day_border_closure + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_border_closure, end_day_border_closure):
+            border_closure_sol[day][r] = 1
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_npis(solution, solution_idx):
+    """Lockdown and border closure only once, for certain periods of time. This function requires
+    num_genes=number_of_regions * 2."""
+
+    LEN_NPI_PERIOD = 28
+
+    solution = np.mod(solution.astype(int), time_horizon_days)
+
+    npi_sol = solution.reshape((number_of_regions, 2))
+
+    lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        start_day_lockdown = npi_sol[r][0]
+        end_day_lockdown = min(start_day_lockdown + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_lockdown, end_day_lockdown):
+            lockdown_sol[day][r] = 1
+        start_day_border_closure = npi_sol[r][1]
+        end_day_border_closure = min(start_day_border_closure + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_border_closure, end_day_border_closure):
+            border_closure_sol[day][r] = 1
+
+    vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_lockdown(solution, solution_idx):
+    """Lockdown for certain periods of time. This function requires
+    num_genes=number_of_regions * max_npi_periods."""
+
+    LEN_NPI_PERIOD = 90
+    MAX_NPI_PERIODS = 3
+
+    num_npi_periods = (time_horizon_days // LEN_NPI_PERIOD) + 1
+
+    solution = np.mod(solution.astype(int), num_npi_periods)
+
+    lock_sol = solution.reshape((number_of_regions, MAX_NPI_PERIODS))
+
+    # lock_sol = np.sign(lock_sol) + (lock_sol == 0)
+
+    lockdown_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        for index in range(MAX_NPI_PERIODS):
+            start_day = lock_sol[r][index] * LEN_NPI_PERIOD
+            end_day = min(start_day + LEN_NPI_PERIOD, time_horizon_days)
+            for day in range(start_day, end_day):
+                lockdown_sol[day][r] = 1
+
+    vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
 
 def fitness_func_variable_supply(solution, solution_idx):
     """Supply of vaccines is variable, where in a given supply period, available doses are shared
@@ -81,7 +209,7 @@ def fitness_func_variable_supply(solution, solution_idx):
 
     total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = 1 / total_deaths
+    fitness = baseline_cost - total_deaths
 
     return fitness
 
@@ -89,7 +217,7 @@ def fitness_func_constant_rate(solution, solution_idx):
     """Shares out all doses on day 0 and administers the doses in each country at a constant rate
     until the doses are used. This function requires num_genes=number_of_regions."""
 
-    TOTAL_DOSES = 2000000000
+    TOTAL_DOSES = 1000000000
     VACCINATION_RATE = 0.005
 
     vaccination_rate = np.full((number_of_regions), VACCINATION_RATE, dtype=float)
@@ -115,7 +243,7 @@ def fitness_func_constant_rate(solution, solution_idx):
 
     total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = 1 / total_deaths
+    fitness = baseline_cost - total_deaths
 
     return fitness
 
@@ -136,7 +264,7 @@ def fitness_func_day_zero(solution, solution_idx):
 
     total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = 1 / total_deaths
+    fitness = baseline_cost - total_deaths
 
     return fitness
 
@@ -148,8 +276,8 @@ config_optimizer =\
     'num_parents_mating': 12,
     'sol_per_pop': 24,
     'popsize': 24,
-    'fitness_func': fitness_func_constant_rate,
-    'num_genes': number_of_regions
+    'fitness_func': fitness_func_full,
+    'num_genes': number_of_regions * 3
 }
 
 # -------------------------------------- OPTIMIZER -------------------------------------------------
@@ -170,7 +298,7 @@ def on_generation(ga_instance):
     """Prints generation number and cost of best solution"""
     print("Generation = {generation}".format(generation=ga_instance.generations_completed))
     print("Cost       = {cost}".format(cost=\
-        int(1 / ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1])))
+          ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1]))
 
 ga_instance = PooledGA(num_generations=config_optimizer['num_generations'],
                        num_parents_mating=config_optimizer['num_parents_mating'],
@@ -208,6 +336,7 @@ if __name__ == "__main__":
 
 # -------------------------------------- COMMENTS --------------------------------------------------
 
-# - Make each supply period a gene (as a numpy array)?
-# - If sum of num_vac_vaccinate_each_day is less than the supply, some vaccine must necessarily
-#   be wasted...
+# - Make each supply period (e.g. day) a gene (as a numpy array)?
+# - Vaccine hesitancy data
+# - Vaccine supply data
+# - Vaccination rate data
