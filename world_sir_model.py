@@ -65,7 +65,7 @@ def add_population_data(regions, regions_data_path):
             iso = str(row[1])
             population_size = int(row[2])
             age_distribution = [float(row[3]), float(row[4]), float(row[5])]
-            vaccine_hesitancy_by_age = [float(row[6]), float(row[7]), float(row[8])]
+            vaccine_hesitancy_by_age = float(row[6])
             population_data_dict[iso]['population_size'] = population_size
             population_data_dict[iso]['age_distribution'] = age_distribution
             population_data_dict[iso]['vaccine_hesitancy_by_age'] = vaccine_hesitancy_by_age
@@ -427,7 +427,7 @@ def sim_factory(config):
     sim.vaccine_hesitant = np.zeros((sim.number_of_regions), dtype=int)
     for region in sim.regions:
         sim.population_sizes[region.id] = region.population_size
-        vaccine_hesitancy = np.dot(region.age_distribution, region.vaccine_hesitancy_by_age)
+        vaccine_hesitancy = region.vaccine_hesitancy_by_age
         sim.vaccine_hesitant[region.id] = int(vaccine_hesitancy * region.population_size)
     sim.initial_cases = set_initial_cases(sim.regions, sim.number_of_regions, sim.number_of_strains,
                                           initial_cases_dict)
@@ -605,7 +605,7 @@ config_world =\
         'border_closure_factor': 1/10,
         'max_norm_prevalance_to_plot': 1.0,
         'shp_path': "data/CNTR_RG_60M_2020_4326.shp",
-        'pop_path': "data/country_data.csv",
+        'pop_path': "data/newcountrydata.csv",
         'airport_path': "data/Airports_2010.csv",
         'air_travel_path': "data/Prediction_Monthly.csv"}
 
