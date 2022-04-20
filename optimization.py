@@ -1,556 +1,367 @@
-
-import uuid
-import os, warnings
+import pygad
 import numpy as np
-from joblib import Parallel, delayed
+import os
 
-warnings.simplefilter("ignore")
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
+from multiprocessing import Pool
+
 from obj_func import *
-
-class Optimizer():
-
-    def __init__(self, sim, cost_function, config):
-
-        self.population = None
-        self.best_sol   = None
-        self.sim        = sim
-        self.cost       = cost_function
-        self.config     = config
-
-        # Switches to decide what to optimize
-        self.optimize_max_vaccines   = config['optimize_max_vaccines']
-        self.optimize_vaccine_timing = config['optimize_vaccine_timing']
-        self.optimize_lockdown       = config['optimize_lockdown']
-        self.optimize_border_closure = config['optimize_border_closure']
-
-        # Optimization parameters
-        self.popsize = config['popsize'] # Number of solutions to be evaluated each generation
-        self.njobs   = config['njobs']   # Number of evalations to be performed in parallel
-        self.mut     = config['mut']     # Mutation rate
-        self.crossp  = config['crossp']  # Crossover rate
-        self.n_gens  = config['n_gens']  # Number of generations to run
-
-        # Simulation parameters
-        self.time_horizon_days = sim.config['time_horizon_days']
-        self.number_of_regions = sim.number_of_regions
-        self.population_sizes  = sim.population_sizes
-        self.max_doses         = sim.population_sizes - sim.vaccine_hesitant
-
-        # Directory for saving and loading solutions
-        self.populations_directory    = config['populations_directory']
-        self.best_solutions_directory = config['best_solutions_directory']
-
-        # Random seed
-        self.random_seed = config['random_seed']
-        np.random.seed(self.random_seed)
-
-    def run_baseline(self):
-        """Runs baseline scenario"""
-
-        time_horizon_days = self.time_horizon_days
-        number_of_regions = self.number_of_regions
-
-        lockdown_input       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
-        border_closure_input = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
-        vaccination_input    = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
-
-        total_deaths = run(config_sim, sim, lockdown_input,
-                           border_closure_input, vaccination_input)
-
-        print("Total baseline deaths:" + str(total_deaths))
-
-    def initialize_population(self):
-        """Generates intial population of solutions"""
-
-        time_horizon_days = self.time_horizon_days
-        number_of_regions = self.number_of_regions
-        popsize           = self.popsize
-
-        total_population_size = np.sum(self.population_sizes)
-        total_doses_available = min(self.cost.total_available_doses, total_population_size)
-
-        if self.optimize_max_vaccines:
-            init_sol_max_vaccines = 0.8 * (total_doses_available / total_population_size) *\
-                                    np.random.rand(popsize, number_of_regions)
-            pop_share = (self.max_doses.T / np.sum(self.max_doses)).astype(float)
-            init_sol_max_vaccines[0] = pop_share
-        else:
-            # If not optimizing this, share the doses equally by population size:
-            init_sol_max_vaccines = (total_doses_available / total_population_size) *\
-                                    np.full((popsize, number_of_regions), 1)
-
-        if self.optimize_vaccine_timing:
-            init_sol_vaccines_dist =\
-                np.random.rand(popsize, time_horizon_days * number_of_regions)
-            pop_share = (self.max_doses.T / np.sum(self.max_doses)).astype(float)
-            init_sol_vaccines_dist[0] =\
-                np.outer(pop_share, np.ones(time_horizon_days, dtype=float)).T.flatten()
-        else:
-            # If not optimizing this, share the doses equally across time:
-            init_sol_vaccines_dist =\
-                np.full((popsize, time_horizon_days * number_of_regions),
-                        1 / time_horizon_days)
-
-        if self.optimize_lockdown:
-            init_sol_lockdown =\
-                np.random.choice([-1,1], size=(popsize, time_horizon_days * number_of_regions))
-        else:
-            # If not optimizing this, no regions lockdown:
-            init_sol_lockdown =\
-                np.full((popsize, time_horizon_days * number_of_regions), -1)
-
-        if self.optimize_border_closure:
-            init_sol_border_closure =\
-                np.random.choice([-1,1], size=(popsize, time_horizon_days * number_of_regions))
-        else:
-            # If not optimizing this, no regions do border closures:
-            init_sol_border_closure =\
-                np.full((popsize, time_horizon_days * number_of_regions), -1)
-
-        initial_population =\
-            np.concatenate([init_sol_max_vaccines, init_sol_vaccines_dist,
-                            init_sol_lockdown, init_sol_border_closure], axis=1)
-
-        self.population = initial_population.copy()
-
-    def evaluate_2(self, solution):
-        """Run one model evaluation with a given solution"""
-
-        # How many people each country is logistically capable of vaccinating each day              # TODO: move into config
-        proportion_can_vaccinate_each_day = 0.1
-        self.num_can_vaccinate_each_day =\
-            (self.population_sizes * proportion_can_vaccinate_each_day).astype(int)
-
-        # How many doses are available worldwide each day                                           # TODO: move into config
-        self.supply = np.full((self.time_horizon_days), 2739726, dtype=int)
-
-        number_of_regions = self.number_of_regions
-        time_horizon_days = self.time_horizon_days
-
-        # share_of_vaccines = solution[0:number_of_regions]
-        # share_of_vaccines = ((share_of_vaccines / np.sum(share_of_vaccines)) *\
-        #                       1000000000).astype(np.uint64)
-
-        M = solution[number_of_regions::].reshape((time_horizon_days * 3, number_of_regions))
-
-        vaccination_sol = M[0:time_horizon_days]
-        vaccination_sol = ((vaccination_sol.T / np.sum(vaccination_sol, axis=1)) * self.supply).T
-        vaccination_sol = np.minimum(self.num_can_vaccinate_each_day, vaccination_sol.astype(int))
-
-        # vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
-        # vaccination_sol[0] = share_of_vaccines
-
-        lockdown_sol = M[time_horizon_days:time_horizon_days * 2]
-        border_closure_sol = M[time_horizon_days * 2:time_horizon_days * 3]
-
-        total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
-        total_cost = self.cost.cost(total_deaths, lockdown_sol, border_closure_sol,
-                                    vaccination_sol, self.max_doses)
-
-        return total_cost
-
-    def evaluate_1(self, solution):
-        """Run one model evaluation with a given solution"""
-
-        total_available_doses = 1000000000
-        proportion_can_vaccinate_each_day = 1 / 365
-
-        number_of_regions = self.number_of_regions
-        time_horizon_days = self.time_horizon_days
-
-        share_of_vaccines = solution[0:number_of_regions]
-        share_of_vaccines = ((share_of_vaccines / np.sum(share_of_vaccines)) *\
-                             total_available_doses).astype(np.uint64)
-
-        num_can_vaccinate_each_day =\
-            (proportion_can_vaccinate_each_day * self.population_sizes).astype(int)
-
-        days_required = np.floor_divide(share_of_vaccines, num_can_vaccinate_each_day).astype(int)
-        num_vaccinated_last_day = np.mod(share_of_vaccines, num_can_vaccinate_each_day).astype(int)
-
-        vaccination_sol = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
-        for r in range(number_of_regions):
-            for t in range(time_horizon_days):
-                if t < days_required[r]:
-                    vaccination_sol[t][r] = num_can_vaccinate_each_day[r]
-                if t == days_required[r]:
-                    vaccination_sol[t][r] = num_vaccinated_last_day[r]
-
-        M = solution[number_of_regions::].reshape((time_horizon_days * 3, number_of_regions))
-
-        lockdown_sol = M[time_horizon_days:time_horizon_days * 2]
-        border_closure_sol = M[time_horizon_days * 2:time_horizon_days * 3]
-
-        total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
-        total_cost = self.cost.cost(total_deaths, lockdown_sol, border_closure_sol,
-                                    vaccination_sol, self.max_doses)
-
-        return total_cost
-
-    def evaluate_0(self, solution):
-        """Run one model evaluation with a given solution"""
-
-        number_of_regions = self.number_of_regions
-        time_horizon_days = self.time_horizon_days
-
-        max_vaccines = solution[0:number_of_regions] * self.max_doses
-
-        M = solution[number_of_regions::].reshape((time_horizon_days * 3, number_of_regions))
-
-        vaccination_sol = M[0:time_horizon_days]
-        vaccination_sol =\
-                    (vaccination_sol / np.tile(vaccination_sol.sum(axis=0), (time_horizon_days, 1)))
-        vaccination_sol = np.floor(vaccination_sol * np.tile(max_vaccines, (time_horizon_days, 1)))
-
-        lockdown_sol = M[time_horizon_days:time_horizon_days * 2]
-        border_closure_sol = M[time_horizon_days * 2:time_horizon_days * 3]
-
-        total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
-        total_cost = self.cost.cost(total_deaths, lockdown_sol, border_closure_sol,
-                                    vaccination_sol, self.max_doses)
-
-        return total_cost
-
-    def optimize(self):
-        """Performs genetic algorithm"""
-
-        time_horizon_days = self.time_horizon_days
-        number_of_regions = self.number_of_regions
-
-        # Containers to store best solutions
-        history_fitness = []
-
-        # Only relevant for differential evolution
-        bounds = np.array([[0, 1] for _ in range(number_of_regions)] +\
-                          [[0, 1] for _ in range(time_horizon_days * number_of_regions)] +\
-                          [[-1, 1] for _ in range(time_horizon_days * number_of_regions * 2)])
-        min_b, max_b = np.asarray(bounds).T
-        diff = np.fabs(min_b - max_b)
-
-        # Initial conditions
-        best_fitness = 10e10 # Best fitness so far
-        best_sol = None      # Best solution so far
-
-        population = self.population
-
-        assert population is not None
-
-        # Must have at least five solutions to perform genetic algorithm
-        assert self.popsize >= 5
-
-        print('Optimizing via DE...')
-
-        for step in range(self.n_gens):
-
-            print("Generation:", step, "Cost:", best_fitness)
-
-            # Evaluate the entire population of solutions and select the survivors
-            fitness = Parallel(n_jobs = self.njobs, verbose=0)(delayed(self.evaluate_2)(solution)
-                                                               for solution in population)
-            best_idx = np.argmin(fitness)
-
-            if fitness[best_idx] < best_fitness:
-                best_sol = population[best_idx]
-                best_fitness = fitness[best_idx]
-                history_fitness.append(best_fitness)
-
-            sorter = np.argsort(fitness)
-            survivors = population[sorter][0:int(len(fitness)/2)]
-            new_pop = survivors.copy()
-
-            # Create the new population. We need to partition this in each solution matrix as we
-            # need to use differential evolution for continous numbers and genetic algorithms for
-            # discrete ones.
-            for j, _ in enumerate(survivors):
-
-                # Vaccination levels across regions
-                init = 0
-                fin = number_of_regions
-                if self.optimize_max_vaccines:
-                    idxs = [idx for idx in range(len(survivors)) if idx != j]
-                    a, b, c = population[np.random.choice(idxs, 3, replace = False), init:fin]
-                    mutant = np.clip(a + self.mut * (b - c), 0, 1)
-                    length_s = fin - init
-                    cross_points = np.random.rand(length_s) < self.crossp
-                    if not np.any(cross_points):
-                        cross_points[np.random.randint(0, length_s)] = True
-                    trial = np.where(cross_points, mutant, population[j, init:fin])
-                    new_max_vaccinations = min_b[init:fin] + trial * diff[init:fin]
-                else:
-                    new_max_vaccinations = population[0, init:fin]
-
-                # Vaccination inter-temporal distribution (timing)
-                init = number_of_regions
-                fin = number_of_regions + time_horizon_days * number_of_regions
-                if self.optimize_vaccine_timing:
-                    idxs = [idx for idx in range(len(survivors)) if idx != j]
-                    a, b, c = population[np.random.choice(idxs, 3, replace = False), init:fin]
-                    mutant = np.clip(a + self.mut * (b - c), 0, 1)
-                    length_s = fin - init
-                    cross_points = np.random.rand(length_s) < self.crossp
-                    if not np.any(cross_points):
-                        cross_points[np.random.randint(0, length_s)] = True
-                    trial = np.where(cross_points, mutant, population[j, init:fin])
-                    new_vaccination_dist = min_b[init:fin] + trial * diff[init:fin]
-                else:
-                    new_vaccination_dist = population[0, init:fin]
-
-                # Lockdowns
-                init = number_of_regions + time_horizon_days * number_of_regions
-                fin = number_of_regions + time_horizon_days * number_of_regions +\
-                                          time_horizon_days * number_of_regions
-                if self.optimize_lockdown:
-                    length_s = fin - init
-                    p1, p2 = survivors[np.random.choice(range(len(survivors)),
-                                                        2, replace=False), init:fin]
-                    c1 = p1.copy()
-                    if np.random.rand() < self.crossp:
-                        pt = np.random.randint(1, len(p1) - 2)
-                        c1[pt:] = p2[pt:]
-                    c1[np.random.rand(length_s) < self.mut] *= -1
-                    new_lockdown = c1
-                else:
-                    new_lockdown = population[0, init:fin]
-
-                # Border closures
-                init = number_of_regions + time_horizon_days * number_of_regions +\
-                                           time_horizon_days * number_of_regions
-                fin = number_of_regions + time_horizon_days * number_of_regions +\
-                                          time_horizon_days * number_of_regions * 2
-                if self.optimize_lockdown:
-                    length_s = fin - init
-                    p1, p2 = survivors[np.random.choice(range(len(survivors)),
-                                                        2, replace=False), init:fin]
-                    c1 = p1.copy()
-                    if np.random.rand() < self.crossp:
-                        pt = np.random.randint(1, len(p1) - 2)
-                        c1[pt:] = p2[pt:]
-                    c1[np.random.rand(length_s) < self.mut] *= -1
-                    new_border_closure = c1
-                else:
-                    new_border_closure = population[0, init:fin]
-
-                # Stitch back all the solutions
-                new_solution = np.concatenate([new_max_vaccinations, new_vaccination_dist,
-                                               new_lockdown, new_border_closure])
-                new_pop = np.concatenate([new_pop, [new_solution]])
-
-            population = new_pop.copy()
-
-        self.population = population
-
-        self.best_sol = best_sol
-
-    def save_population(self):
-        """Saves population to disk"""
-
-        print("Saving population")
-
-        np.save(self.populations_directory + str(uuid.uuid4().hex), self.population)
-
-    def save_best_solution(self):
-        """Saves best solution to disk"""
-
-        print("Saving best solution")
-
-        if self.best_sol is not None:
-            np.save(self.best_solutions_directory + str(uuid.uuid4().hex), self.best_sol)
-
-    def load_population(self):
-        """Loads population from disk"""
-
-        populations_directory = self.populations_directory
-
-        disk_population = []
-
-        for filename in os.listdir(populations_directory):
-            f = os.path.join(populations_directory, filename)
-            if os.path.isfile(f):
-                sol = np.load(f)
-                disk_population.append(sol)
-
-        if len(disk_population) > 0:
-            print("Loading a saved population")
-            self.population = disk_population[0]
-
-    def load_best_solution(self):
-        """Loads solutions from disk and inserts them into the population"""
-
-        best_solutions_directory = self.best_solutions_directory
-
-        disk_population = []
-
-        for filename in os.listdir(best_solutions_directory):
-            f = os.path.join(best_solutions_directory, filename)
-            if os.path.isfile(f):
-                sol = np.load(f)
-                disk_population.append(sol)
-
-        if len(disk_population) > 0:
-            print("Loading a best solution")
-            self.best_sol = disk_population[0]
-
-        if self.population is not None:
-            num_to_insert = min(len(self.population), len(disk_population))
-            print("Inserting " + str(num_to_insert) + " solution(s) from disk")
-            for i in range(num_to_insert):
-                self.population[i] = disk_population[i]
-
-    def empty_populations_directory(self):
-        """Deletes populations from disk"""
-
-        print("Emptying populations directory")
-
-        for filename in os.listdir(self.populations_directory):
-            f = os.path.join(self.populations_directory, filename)
-            if os.path.isfile(f):
-                os.remove(f)
-
-    def empty_best_solutions_directory(self):
-        """Deletes best solutions from disk"""
-
-        print("Emptying best solutions directory")
-
-        for filename in os.listdir(self.best_solutions_directory):
-            f = os.path.join(self.best_solutions_directory, filename)
-            if os.path.isfile(f):
-                os.remove(f)
-
-    def play_sol(self, solution):
-        """Run best solution with render mode activated"""
-
-        if solution is not None:
-            self.sim.config['render'] = True
-            self.evaluate_2(solution)
-            self.sim.config['render'] = False
-
-# -------------------------------------- COST FUNCTION ---------------------------------------------
-
-class CostFunction():
-
-    def __init__(self, config):
-
-        self.total_available_doses              = config['total_available_doses']
-        self.max_days_allowed_in_lockdown       = config['max_days_allowed_in_lockdown']
-        self.max_days_allowed_in_border_closure = config['max_days_allowed_in_border_closure']
-
-    def cost(self, total_deaths, lockdown_input, border_closure_input,
-             vaccination_input, max_doses):
-        """Calculates total cost of a simulation"""
-
-        cost = total_deaths
-
-        # total_doses = np.sum(vaccination_input)
-        # if total_doses > self.total_available_doses:
-        #     cost += 10e10
-
-        # total_doses_by_region = np.sum(vaccination_input, axis=0)
-        # if np.any(max_doses - total_doses_by_region < 0):
-        #     cost += 10e10
-
-        # days_in_lockdown = ((1 + lockdown_input) / 2).sum(axis=0)
-        # if np.max(days_in_lockdown) > self.max_days_allowed_in_lockdown:
-        #     cost += 10e10
-
-        # days_in_border_closure = ((1 + border_closure_input) / 2).sum(axis=0)
-        # if np.max(days_in_border_closure) > self.max_days_allowed_in_border_closure:
-        #     cost += 10e10
-
-        return cost
 
 # -------------------------------------- CONFIG SIM ------------------------------------------------
 
 config_sim =\
-       {'render': False,
-        'save_screeshot': True,
-        'screenshot_filename': 'screenshots/screenshot.jpg',
-        'display_width': 1200,
-        'display_height': 700,
-        'font_size': 20,
-        'points_per_polygon': 400,
-        'infection_cmap': "Oranges",
-        'vaccination_cmap': "Blues",
-        'international_travel_enabled': True,
-        'refresh_rate': 60,
-        'time_horizon_days': 365,
-        'euler_scheme_step_size_days': 1/1,
-        'transmission_probabilities': np.array([0.00035]),
-        'removal_rates_per_day': np.array([1 / 9]),
-        'infection_fatality_rate_by_age': np.array([[0.0, 0.001, 0.01]]),
-        'initial_cases_dict': {'CN': [10000]},
-        'local_travel_prob_per_day': 0.0,
-        'distance_threshold': 50,
-        'contacts_per_day': 778,
-        'lockdown_factor': 1/10,
-        'border_closure_factor': 1/10,
-        'max_norm_prevalance_to_plot': 1.0,
-        'shp_path': "data/CNTR_RG_60M_2020_4326.shp",
-        'pop_path': "data/country_data_vac_uniform.csv",
-        'airport_path': "data/Airports_2010.csv",
-        'air_travel_path': "data/Prediction_Monthly.csv"}
+{
+    'render': False,
+    'save_screeshot': True,
+    'screenshot_filename': 'screenshots/screenshot.jpg',
+    'display_width': 1200,
+    'display_height': 700,
+    'font_size': 20,
+    'points_per_polygon': 400,
+    'infection_cmap': "Oranges",
+    'vaccination_cmap': "Blues",
+    'international_travel_enabled': True,
+    'refresh_rate': 60,
+    'time_horizon_days': 365,
+    'euler_scheme_step_size_days': 1/1,
+    'transmission_probabilities': np.array([0.00035]),
+    'removal_rates_per_day': np.array([1 / 9]),
+    'infection_fatality_rate_by_age':
+      np.array([[0.000070, 0.000054, 0.000040, 0.000032, 0.000027,
+                 0.000024, 0.000023, 0.000023, 0.000023, 0.000025,
+                 0.000028, 0.000031, 0.000036, 0.000042, 0.000050,
+                 0.000060, 0.000071, 0.000085, 0.000100, 0.000118,
+                 0.000138, 0.000162, 0.000188, 0.000219, 0.000254,
+                 0.000293, 0.000337, 0.000386, 0.000442, 0.000504,
+                 0.000573, 0.000650, 0.000735, 0.000829, 0.000932,
+                 0.001046, 0.001171, 0.001307, 0.001455, 0.001616,
+                 0.001789, 0.001976, 0.002177, 0.002391, 0.002620,
+                 0.002863, 0.003119, 0.003389, 0.003672, 0.003968,
+                 0.004278, 0.004606, 0.004958, 0.005342, 0.005766,
+                 0.006242, 0.006785, 0.007413, 0.008149, 0.009022,
+                 0.010035, 0.011162, 0.012413, 0.013803, 0.015346,
+                 0.017058, 0.018957, 0.021064, 0.023399, 0.025986,
+                 0.028851, 0.032022, 0.035527, 0.039402, 0.043679,
+                 0.048397, 0.053597, 0.059320, 0.065612, 0.072520,
+                 0.080093, 0.088381, 0.097437, 0.107311, 0.118054,
+                 0.129717, 0.142346, 0.155984, 0.170669, 0.186431,
+                 0.203292, 0.221263, 0.240344, 0.260519, 0.281760,
+                 0.304021, 0.327239, 0.351335, 0.376213, 0.401762,
+                 0.427856]]),
+    'initial_cases_dict': {'CN': [10000]},
+    'local_travel_prob_per_day': 0.0,
+    'distance_threshold': 50,
+    'contacts_per_day': 778,
+    'lockdown_factor': 1/10,
+    'border_closure_factor': 1/10,
+    'max_norm_prevalance_to_plot': 1.0,
+    'shp_path': "data/data_shapefiles/CNTR_RG_60M_2020_4326.shp",
+    'pop_path': "data/compiled_data.csv",
+    'airport_path': "data/data_air_travel/Airports_2010.csv",
+    'air_travel_path': "data/data_air_travel/Prediction_Monthly.csv"
+}
 
-# -------------------------------------- BUILD SIMULATOR -------------------------------------------
+# -------------------------------------- SIM -------------------------------------------------------
 
 sim = sim_factory(config_sim)
 
-# -------------------------------------- CONFIG COST FUNCTION --------------------------------------
+def run_baseline(sim):
+    """Runs baseline scenario"""
 
-config_cost =\
-       {'total_available_doses': 1000000000,
-        'max_days_allowed_in_lockdown': 100,
-        'max_days_allowed_in_border_closure': 100}
+    time_horizon_days = sim.config['time_horizon_days']
+    number_of_regions = sim.number_of_regions
 
-# -------------------------------------- BUILD COST FUNCTION ---------------------------------------
+    lockdown_input       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_input = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    vaccination_input    = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
 
-cost_function = CostFunction(config_cost)
+    total_deaths = run(config_sim, sim, lockdown_input, border_closure_input, vaccination_input)
+
+    return total_deaths
+
+baseline_cost = run_baseline(sim)
+
+# -------------------------------------- FITNESS FUNCTIONS -----------------------------------------
+
+time_horizon_days = sim.config['time_horizon_days']
+number_of_regions = sim.number_of_regions
+population_sizes  = sim.population_sizes
+
+def fitness_func_full(solution, solution_idx):
+    """Lockdown and border closure for certain periods of time and vaccinate at a constant rate.
+    This function requires num_genes=number_of_regions * 3."""
+
+    TOTAL_DOSES = 1000000000 # The total number of doses available
+    VACCINATION_RATE = 0.006 # The maximum proportion of population a country can vaccinate each day
+
+    vaccination_rate = np.full((number_of_regions), VACCINATION_RATE, dtype=float)
+
+    sol = solution[0:number_of_regions]
+    share = np.absolute(sol)
+    share = ((share / np.sum(share)) * TOTAL_DOSES).astype(np.uint64)
+
+    num_can_vaccinate_each_day = (np.multiply(vaccination_rate, population_sizes)).astype(int)
+
+    days_required = np.floor_divide(share, num_can_vaccinate_each_day).astype(int)
+    num_vaccinated_last_day = np.mod(share, num_can_vaccinate_each_day).astype(int)
+
+    vaccination_sol = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
+    for r in range(number_of_regions):
+        for t in range(time_horizon_days):
+            if t < days_required[r]:
+                vaccination_sol[t][r] = num_can_vaccinate_each_day[r]
+            if t == days_required[r]:
+                vaccination_sol[t][r] = num_vaccinated_last_day[r]
+
+    LEN_NPI_PERIOD = 28
+
+    sol = solution[number_of_regions:]
+    solution_mod = np.mod(sol.astype(int), time_horizon_days)
+    npi_sol = solution_mod.reshape((number_of_regions, 2))
+
+    lockdown_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        start_day_lockdown = npi_sol[r][0]
+        end_day_lockdown = min(start_day_lockdown + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_lockdown, end_day_lockdown):
+            lockdown_sol[day][r] = 1
+        start_day_border_closure = npi_sol[r][1]
+        end_day_border_closure = min(start_day_border_closure + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_border_closure, end_day_border_closure):
+            border_closure_sol[day][r] = 1
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_npis(solution, solution_idx):
+    """Lockdown and border closure only once, for certain periods of time. This function requires
+    num_genes=number_of_regions * 2."""
+
+    LEN_NPI_PERIOD = 28
+
+    solution = np.mod(solution.astype(int), time_horizon_days)
+
+    npi_sol = solution.reshape((number_of_regions, 2))
+
+    lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        start_day_lockdown = npi_sol[r][0]
+        end_day_lockdown = min(start_day_lockdown + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_lockdown, end_day_lockdown):
+            lockdown_sol[day][r] = 1
+        start_day_border_closure = npi_sol[r][1]
+        end_day_border_closure = min(start_day_border_closure + LEN_NPI_PERIOD, time_horizon_days)
+        for day in range(start_day_border_closure, end_day_border_closure):
+            border_closure_sol[day][r] = 1
+
+    vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_lockdown(solution, solution_idx):
+    """Multiple lockdowns for certain periods of time. This function requires
+    num_genes=number_of_regions * max_npi_periods."""
+
+    LEN_NPI_PERIOD = 28
+    MAX_NPI_PERIODS = 3
+
+    num_npi_periods = (time_horizon_days // LEN_NPI_PERIOD) + 1
+
+    solution = np.mod(solution.astype(int), num_npi_periods)
+
+    lock_sol = solution.reshape((number_of_regions, MAX_NPI_PERIODS))
+
+    # lock_sol = np.sign(lock_sol) + (lock_sol == 0)
+
+    lockdown_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    for r in range(number_of_regions):
+        for index in range(MAX_NPI_PERIODS):
+            start_day = lock_sol[r][index] * LEN_NPI_PERIOD
+            end_day = min(start_day + LEN_NPI_PERIOD, time_horizon_days)
+            for day in range(start_day, end_day):
+                lockdown_sol[day][r] = 1
+
+    vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_variable_supply(solution, solution_idx):
+    """Supply of vaccines is variable, where in a given supply period, available doses are shared
+    out and administered no faster than a certain fixed rate. This function requires
+    num_genes=number_of_regions * num_supply_periods."""
+
+    TOTAL_DOSES = 1000000000 # The total number of doses available
+    VACCINATION_RATE = 0.006 # The maximum proportion of population a country can vaccinate each day
+    LEN_SUPPLY_PERIOD = 30   # The time period is divided into supply periods of this length in days
+
+    vaccination_rate = np.full((number_of_regions), VACCINATION_RATE, dtype=float)
+
+    num_supply_periods = (time_horizon_days // LEN_SUPPLY_PERIOD) + 1
+
+    # Supply the doses equally over time
+    supply = np.full((num_supply_periods), int(TOTAL_DOSES / num_supply_periods), dtype=int)
+
+    # Supply the doses according to a time-dependent distribution of appropriate length
+    # supply = np.array([0.0005, 0.0004, 0.0007, 0.0012, 0.0023, 0.0030,
+    #                    0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040])
+    # supply = ((supply / np.sum(supply)) * TOTAL_DOSES).astype(int)
+
+    vac_sol = np.absolute(solution.reshape((num_supply_periods, number_of_regions)))
+    vac_sol = ((vac_sol.T / np.sum(vac_sol, axis=1)) * supply).T
+
+    num_can_vaccinate_each_day = (np.multiply(vaccination_rate, population_sizes)).astype(int)
+
+    vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
+    for day in range(time_horizon_days):
+        vaccination_sol[day] =\
+            min((vac_sol[day // LEN_SUPPLY_PERIOD] / LEN_SUPPLY_PERIOD).astype(int),
+                num_can_vaccinate_each_day)
+
+    lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_constant_rate(solution, solution_idx):
+    """Shares out all doses on day 0 and administers the doses in each country at a constant rate
+    until the doses are used. This function requires num_genes=number_of_regions."""
+
+    TOTAL_DOSES = 1000000000 # The total number of doses available
+    VACCINATION_RATE = 0.006 # The maximum proportion of population a country can vaccinate each day
+
+    vaccination_rate = np.full((number_of_regions), VACCINATION_RATE, dtype=float)
+
+    share = np.absolute(solution)
+    share = ((share / np.sum(share)) * TOTAL_DOSES).astype(np.uint64)
+
+    num_can_vaccinate_each_day = (np.multiply(vaccination_rate, population_sizes)).astype(int)
+
+    days_required = np.floor_divide(share, num_can_vaccinate_each_day).astype(int)
+    num_vaccinated_last_day = np.mod(share, num_can_vaccinate_each_day).astype(int)
+
+    vaccination_sol = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
+    for r in range(number_of_regions):
+        for t in range(time_horizon_days):
+            if t < days_required[r]:
+                vaccination_sol[t][r] = num_can_vaccinate_each_day[r]
+            if t == days_required[r]:
+                vaccination_sol[t][r] = num_vaccinated_last_day[r]
+
+    lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
+
+def fitness_func_day_zero(solution, solution_idx):
+    """Shares out all doses on day 0 and immediately administers the doses. This function requires
+    num_genes=number_of_regions."""
+
+    TOTAL_DOSES = 1000000000 # The total number of doses available
+
+    share = np.absolute(solution)
+    share = ((share / np.sum(share)) * TOTAL_DOSES).astype(np.uint64)
+
+    vaccination_sol = np.full((time_horizon_days, number_of_regions), 0, dtype=int)
+    vaccination_sol[0] = share
+
+    lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+    border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
+
+    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+
+    fitness = baseline_cost - total_deaths
+
+    return fitness
 
 # -------------------------------------- CONFIG OPTIMIZER ------------------------------------------
 
 config_optimizer =\
-       {'optimize_max_vaccines': False,
-        'optimize_vaccine_timing': True,
-        'optimize_lockdown': False,
-        'optimize_border_closure': False,
-        'popsize': 24,
-        'njobs': 12,
-        'n_gens': 1000,
-        'mut': 0.8,
-        'crossp': 0.7,
-        'random_seed': 3,
-        'populations_directory': './populations/',
-        'best_solutions_directory': './best_solutions/'}
+{
+    'num_generations': 10,
+    'num_parents_mating': 12,
+    'sol_per_pop': 24,
+    'popsize': 24,
+    'fitness_func': fitness_func_constant_rate,
+    'num_genes': number_of_regions
+}
 
-# -------------------------------------- BUILD OPTIMIZER -------------------------------------------
+# -------------------------------------- OPTIMIZER -------------------------------------------------
 
-optimizer = Optimizer(sim, cost_function, config_optimizer)
+fitness_func = config_optimizer['fitness_func']
 
-# -------------------------------------- OPTIMIZE --------------------------------------------------
+def fitness_wrapper(solution):
+    return fitness_func(solution, 0)
 
-optimizer.run_baseline()
+class PooledGA(pygad.GA):
+    def cal_pop_fitness(self):
+        global pool
+        pop_fitness = pool.map(fitness_wrapper, self.population)
+        pop_fitness = np.array(pop_fitness)
+        return pop_fitness
 
-optimizer.initialize_population()
+def on_generation(ga_instance):
+    """Prints generation number and cost of best solution"""
+    print("Generation = {generation}".format(generation=ga_instance.generations_completed))
+    print("Fitness    = {cost}".format(cost=\
+          ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1]))
 
-optimizer.load_best_solution()
+ga_instance = PooledGA(num_generations=config_optimizer['num_generations'],
+                       num_parents_mating=config_optimizer['num_parents_mating'],
+                       sol_per_pop=config_optimizer['sol_per_pop'],
+                       num_genes=config_optimizer['num_genes'],
+                       fitness_func=fitness_func,
+                       on_generation=on_generation,
+                       gene_type=float)
 
-# optimizer.load_population()
+if __name__ == "__main__":
 
-optimizer.optimize()
+    # Load the saved GA instance
+    # filename = 'genetic'
+    # ga_instance = pygad.load(filename=filename)
 
-# optimizer.empty_populations_directory()
+    # Run the genetic algorithm
+    with Pool(processes=12) as pool:
+        ga_instance.run()
 
-# optimizer.empty_best_solutions_directory()
+    # Plot the fitness curve
+    ga_instance.plot_fitness()
 
-optimizer.save_population()
+    # Return the details of the best solution
+    solution, solution_fitness, solution_idx =\
+        ga_instance.best_solution(ga_instance.last_generation_fitness)
 
-optimizer.save_best_solution()
+    # Save the GA instance
+    filename = 'genetic'
+    ga_instance.save(filename=filename)
 
-# optimizer.load_best_solution()
-
-optimizer.play_sol(optimizer.best_sol)
+    # Play back the best solution and save a screenshot of the final distribution
+    sim.config['render'] = True
+    fitness_func(solution, 0)
+    sim.config['render'] = False
 
 # -------------------------------------- COMMENTS --------------------------------------------------
 
-# - Implement time varying vaccine dose limits (do more cleverly than at present...!)
-# - Call 'max_doses' instead 'eligible_population_sizes' or something...
+# - Make each supply period (e.g. day) a gene (as a numpy array)?

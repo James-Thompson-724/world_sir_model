@@ -45,9 +45,12 @@ def initialize_regions(regions_data_path):
     # Initialize regions using population data
     regions = []
     with open(regions_data_path, newline='') as csvfile:
+        next(csvfile)
         region_data = csv.reader(csvfile, delimiter=',')
         for row in region_data:
             iso = str(row[1])
+            if iso == 'GB':
+                iso = 'UK'
             new_region = Region(iso)
             regions.append(new_region)
 
@@ -63,12 +66,15 @@ def add_population_data(regions, regions_data_path):
     # Add population data to regions
     population_data_dict = defaultdict(dict)
     with open(regions_data_path, newline='') as csvfile:
+        next(csvfile)
         region_data = csv.reader(csvfile, delimiter=',')
         for row in region_data:
             iso = str(row[1])
+            if iso == 'GB':
+                iso = 'UK'
             population_size = int(row[2])
-            age_distribution = [float(row[3]), float(row[4]), float(row[5])]
-            vaccine_hesitancy = float(row[6])
+            vaccine_hesitancy = float(row[3])
+            age_distribution = [float(row[4 + r]) for r in range(101)]
             population_data_dict[iso]['population_size'] = population_size
             population_data_dict[iso]['age_distribution'] = age_distribution
             population_data_dict[iso]['vaccine_hesitancy'] = vaccine_hesitancy
@@ -230,7 +236,7 @@ def get_mixing_prob_matrix(regions, airport_path, air_travel_path,
                     adjacency_matrix[region.id][other_region.id] = 1
     np.fill_diagonal(adjacency_matrix, 0)
 
-    # Calculate local travel probabilities, rescaled according to step size
+    # Calculate local travel probabilities
     share_matrix = np.zeros((num_of_regions, num_of_regions), dtype=float)
     for region in regions:
         for other_region in regions:
@@ -305,9 +311,10 @@ def set_initial_cases(regions, number_of_regions, number_of_strains,
 def set_ifr(regions, ifr_by_age):
     """Sets infection fatality rate for each region"""
 
-    ifr = np.zeros((len(regions), len(ifr_by_age)), dtype=float)
+    num_strains = len(ifr_by_age)
+    ifr = np.zeros((len(regions), num_strains), dtype=float)
     for region in regions:
-        for i in range(len(ifr_by_age)):
+        for i in range(num_strains):
             ifr[region.id][i] = np.dot(region.age_distribution, ifr_by_age[i])
 
     return ifr
@@ -453,11 +460,11 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     initial_cases           = sim.initial_cases
     ifr                     = sim.ifr
 
-    # Parameters (S: Susceptible and not vaccine hesitant,
-    #             H: Susceptible and vaccine hesitant,
-    #             I: Infected,
-    #             R: Recovered,
-    #             D: Dead)
+    # Compartments (S: Susceptible and not vaccine hesitant,
+    #               H: Susceptible and vaccine hesitant,
+    #               I: Infected,
+    #               R: Recovered,
+    #               D: Dead)
     T = int(time_horizon_days * (1/step_size))
     N = population_sizes
     S = np.zeros((T, number_of_regions), dtype=np.float64)
@@ -483,7 +490,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     N_bar = np.zeros((number_of_regions, number_of_strains), dtype=float)
     for k in range(number_of_regions):
         for i in range(number_of_strains):
-            N_bar[k][i] = 1/N[k]
+            N_bar[k][i] = 1 / N[k]
 
     if render:
         pygame.init()
@@ -535,8 +542,8 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
 
         # Update contact matrix according to non-pharmacheutical interventions
         contact_matrix = copy.deepcopy(baseline_contact_matrix)
-        vec = (((1 + border_closure_status)/2) * border_closure_factor) +\
-              (1 - ((1 + border_closure_status)/2))
+        vec = (((1 + border_closure_status) / 2) * border_closure_factor) +\
+              (1 - ((1 + border_closure_status) / 2))
         contact_matrix = np.transpose(np.multiply(vec, np.transpose(contact_matrix)))
         baseline_contact_matrix_diag = np.diagonal(baseline_contact_matrix)
         new_diag = np.multiply(baseline_contact_matrix_diag * lockdown_factor,
@@ -547,7 +554,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         # Simulate transmission
         if t < T - 1:
 
-            # Vaccinate
+            # Vaccination
             doses_administered = np.minimum(S[t], vaccination_input[day] / steps_in_a_day)
             S[t] = S[t] - doses_administered
             R[t] = R[t] + doses_administered
