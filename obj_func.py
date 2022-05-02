@@ -157,10 +157,10 @@ def verify_matrix(matrix):
 
 def get_mixing_prob_matrix(regions, airport_path, air_travel_path,
                            local_travel_prob_per_day, distance_threshold):
-    """Constructs probability matrix of mixing between regions. The matrix travel_prob_matrix will
+    """Constructs stochastic matrix of mixing between regions. The matrix travel_prob_matrix will
     be returned by this function. It will be constructed via a combination of air_travel_prob_matrix
     and local_travel_prob_matrix, defined below. Since the air travel data used for these
-    simulaitons also records the month of travel, we additionally calculate
+    simulations also records the month of travel, we additionally calculate
     air_travel_prob_matrix_by_month, for later use."""
 
     num_of_regions = len(regions)

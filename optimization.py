@@ -50,7 +50,7 @@ config_sim =\
                  0.304021, 0.327239, 0.351335, 0.376213, 0.401762,
                  0.427856]]),
     'initial_cases_dict': {'CN': [10000]},
-    'local_travel_prob_per_day': 0.0, # 0.0001
+    'local_travel_prob_per_day': 0.0, # 0.00005
     'distance_threshold': 50,
     'contacts_per_day': 778,
     'lockdown_factor': 1/10,
@@ -229,8 +229,8 @@ def fitness_func_variable_supply(solution, solution_idx):
     vaccination_sol = np.zeros((time_horizon_days, number_of_regions), dtype=int)
     for day in range(time_horizon_days):
         vaccination_sol[day] =\
-            min((vac_sol[day // LEN_SUPPLY_PERIOD] / LEN_SUPPLY_PERIOD).astype(int),
-                num_can_vaccinate_each_day)
+            np.minimum((vac_sol[day // LEN_SUPPLY_PERIOD] / LEN_SUPPLY_PERIOD).astype(int),
+                       num_can_vaccinate_each_day)
 
     lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
     border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
@@ -365,3 +365,4 @@ if __name__ == "__main__":
 # -------------------------------------- COMMENTS --------------------------------------------------
 
 # - Make each supply period (e.g. day) a gene (as a numpy array)?
+# - represent age-dependent vaccination by adjusting ifr accordingly?

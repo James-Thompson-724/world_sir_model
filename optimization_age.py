@@ -50,7 +50,7 @@ config_sim =\
                  0.304021, 0.327239, 0.351335, 0.376213, 0.401762,
                  0.427856]]),
     'initial_cases_dict': {'CN': [10000]},
-    'local_travel_prob_per_day': 0.0, # 0.00005
+    'local_travel_prob_per_day': 0.00005,
     'distance_threshold': 50,
     'contacts_per_day': 778,
     'lockdown_factor': 1/10,

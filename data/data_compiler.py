@@ -56,7 +56,7 @@ for iso in isos_numeric:
 # Combine relavent data into single file to be used as simulator input
 handle = open('compiled_data.csv', 'w', newline='')
 writer = csv.writer(handle)
-header = ['name', 'iso', 'population_size', 'max_vaccination_coverage'] + [a for a in range(101)]
+header = ['name', 'iso', 'population_size', 'vaccine_hesitant'] + [a for a in range(101)]
 writer.writerow(header)
 for iso in isos_numeric:
     if iso in population_sizes:
