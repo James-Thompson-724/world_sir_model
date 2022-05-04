@@ -1,0 +1,249 @@
+Afghanistan,AF,AFG,4,Asia-Pacific Group
+Albania,AL,ALB,8,Eastern European Group
+Algeria,DZ,DZA,12,African Group
+American Samoa,AS,ASM,16,Asia-Pacific Group
+Andorra,AD,AND,20,WEOG
+Angola,AO,AGO,24,African Group
+Anguilla,AI,AIA,660,GRULAC
+Antarctica,AQ,ATA,10,WEOG
+Antigua and Barbuda,AG,ATG,28,GRULAC
+Argentina,AR,ARG,32,GRULAC
+Armenia,AM,ARM,51,Eastern European Group
+Aruba,AW,ABW,533,GRULAC
+Australia,AU,AUS,36,WEOG
+Austria,AT,AUT,40,WEOG
+Azerbaijan,AZ,AZE,31,Eastern European Group
+Bahamas (the),BS,BHS,44,GRULAC
+Bahrain,BH,BHR,48,Asia-Pacific Group
+Bangladesh,BD,BGD,50,Asia-Pacific Group
+Barbados,BB,BRB,52,GRULAC
+Belarus,BY,BLR,112,Eastern European Group
+Belgium,BE,BEL,56,WEOG
+Belize,BZ,BLZ,84,GRULAC
+Benin,BJ,BEN,204,African Group
+Bermuda,BM,BMU,60,GRULAC
+Bhutan,BT,BTN,64,Asia-Pacific Group
+Bolivia (Plurinational State of),BO,BOL,68,GRULAC
+"Bonaire, Sint Eustatius and Saba",BQ,BES,535,GRULAC
+Bosnia and Herzegovina,BA,BIH,70,Eastern European Group
+Botswana,BW,BWA,72,African Group
+Bouvet Island,BV,BVT,74,WEOG
+Brazil,BR,BRA,76,GRULAC
+British Indian Ocean Territory (the),IO,IOT,86,WEOG
+Brunei Darussalam,BN,BRN,96,Asia-Pacific Group
+Bulgaria,BG,BGR,100,Eastern European Group
+Burkina Faso,BF,BFA,854,African Group
+Burundi,BI,BDI,108,African Group
+Cabo Verde,CV,CPV,132,African Group
+Cambodia,KH,KHM,116,Asia-Pacific Group
+Cameroon,CM,CMR,120,African Group
+Canada,CA,CAN,124,WEOG
+Cayman Islands (the),KY,CYM,136,WEOG
+Central African Republic (the),CF,CAF,140,African Group
+Chad,TD,TCD,148,African Group
+Chile,CL,CHL,152,GRULAC
+China,CN,CHN,156,Asia-Pacific Group
+Christmas Island,CX,CXR,162,WEOG
+Cocos (Keeling) Islands (the),CC,CCK,166,WEOG
+Colombia,CO,COL,170,GRULAC
+Comoros (the),KM,COM,174,African Group
+Congo (the Democratic Republic of the),CD,COD,180,African Group
+Congo (the),CG,COG,178,African Group
+Cook Islands (the),CK,COK,184,WEOG
+Costa Rica,CR,CRI,188,GRULAC
+Croatia,HR,HRV,191,Eastern European Group
+Cuba,CU,CUB,192,GRULAC
+Curaçao,CW,CUW,531,WEOG
+Cyprus,CY,CYP,196,Asia-Pacific Group
+Czechia,CZ,CZE,203,Eastern European Group
+Côte d'Ivoire,CI,CIV,384,African Group
+Denmark,DK,DNK,208,WEOG
+Djibouti,DJ,DJI,262,African Group
+Dominica,DM,DMA,212,GRULAC
+Dominican Republic (the),DO,DOM,214,GRULAC
+Ecuador,EC,ECU,218,GRULAC
+Egypt,EG,EGY,818,African Group
+El Salvador,SV,SLV,222,GRULAC
+Equatorial Guinea,GQ,GNQ,226,African Group
+Eritrea,ER,ERI,232,African Group
+Estonia,EE,EST,233,Eastern European Group
+Eswatini,SZ,SWZ,748,African Group
+Ethiopia,ET,ETH,231,African Group
+Falkland Islands (the) [Malvinas],FK,FLK,238,WEOG
+Faroe Islands (the),FO,FRO,234,WEOG
+Fiji,FJ,FJI,242,Asia-Pacific Group
+Finland,FI,FIN,246,WEOG
+France,FR,FRA,250,WEOG
+French Guiana,GF,GUF,254,WEOG
+French Polynesia,PF,PYF,258,WEOG
+French Southern Territories (the),TF,ATF,260,WEOG
+Gabon,GA,GAB,266,African Group
+Gambia (the),GM,GMB,270,African Group
+Georgia,GE,GEO,268,Eastern European Group
+Germany,DE,DEU,276,WEOG
+Ghana,GH,GHA,288,African Group
+Gibraltar,GI,GIB,292,WEOG
+Greece,GR,GRC,300,WEOG
+Greenland,GL,GRL,304,WEOG
+Grenada,GD,GRD,308,GRULAC
+Guadeloupe,GP,GLP,312,WEOG
+Guam,GU,GUM,316,WEOG
+Guatemala,GT,GTM,320,GRULAC
+Guernsey,GG,GGY,831,WEOG
+Guinea,GN,GIN,324,African Group
+Guinea-Bissau,GW,GNB,624,African Group
+Guyana,GY,GUY,328,GRULAC
+Haiti,HT,HTI,332,GRULAC
+Heard Island and McDonald Islands,HM,HMD,334,WEOG
+Holy See (the),VA,VAT,336,WEOG
+Honduras,HN,HND,340,GRULAC
+Hong Kong,HK,HKG,344,Asia-Pacific Group
+Hungary,HU,HUN,348,Eastern European Group
+Iceland,IS,ISL,352,WEOG
+India,IN,IND,356,Asia-Pacific Group
+Indonesia,ID,IDN,360,Asia-Pacific Group
+Iran (Islamic Republic of),IR,IRN,364,Asia-Pacific Group
+Iraq,IQ,IRQ,368,Asia-Pacific Group
+Ireland,IE,IRL,372,WEOG
+Isle of Man,IM,IMN,833,WEOG
+Israel,IL,ISR,376,WEOG
+Italy,IT,ITA,380,WEOG
+Jamaica,JM,JAM,388,GRULAC
+Japan,JP,JPN,392,Asia-Pacific Group
+Jersey,JE,JEY,832,WEOG
+Jordan,JO,JOR,400,Asia-Pacific Group
+Kazakhstan,KZ,KAZ,398,Asia-Pacific Group
+Kenya,KE,KEN,404,African Group
+Kiribati,KI,KIR,296,Asia-Pacific Group
+Korea (the Democratic People's Republic of),KP,PRK,408,Asia-Pacific Group
+Korea (the Republic of),KR,KOR,410,Asia-Pacific Group
+Kuwait,KW,KWT,414,Asia-Pacific Group
+Kyrgyzstan,KG,KGZ,417,Asia-Pacific Group
+Lao People's Democratic Republic (the),LA,LAO,418,Asia-Pacific Group
+Latvia,LV,LVA,428,Eastern European Group
+Lebanon,LB,LBN,422,Asia-Pacific Group
+Lesotho,LS,LSO,426,African Group
+Liberia,LR,LBR,430,African Group
+Libya,LY,LBY,434,African Group
+Liechtenstein,LI,LIE,438,WEOG
+Lithuania,LT,LTU,440,Eastern European Group
+Luxembourg,LU,LUX,442,WEOG
+Macao,MO,MAC,446,Asia-Pacific Group
+Madagascar,MG,MDG,450,African Group
+Malawi,MW,MWI,454,African Group
+Malaysia,MY,MYS,458,Asia-Pacific Group
+Maldives,MV,MDV,462,Asia-Pacific Group
+Mali,ML,MLI,466,African Group
+Malta,MT,MLT,470,WEOG
+Marshall Islands (the),MH,MHL,584,Asia-Pacific Group
+Martinique,MQ,MTQ,474,WEOG
+Mauritania,MR,MRT,478,African Group
+Mauritius,MU,MUS,480,African Group
+Mayotte,YT,MYT,175,WEOG
+Mexico,MX,MEX,484,GRULAC
+Micronesia (Federated States of),FM,FSM,583,Asia-Pacific Group
+Moldova (the Republic of),MD,MDA,498,Eastern European Group
+Monaco,MC,MCO,492,WEOG
+Mongolia,MN,MNG,496,Asia-Pacific Group
+Montenegro,ME,MNE,499,Eastern European Group
+Montserrat,MS,MSR,500,WEOG
+Morocco,MA,MAR,504,African Group
+Mozambique,MZ,MOZ,508,African Group
+Myanmar,MM,MMR,104,Asia-Pacific Group
+Namibia,NA,NAM,516,African Group
+Nauru,NR,NRU,520,Asia-Pacific Group
+Nepal,NP,NPL,524,Asia-Pacific Group
+Netherlands (the),NL,NLD,528,WEOG
+New Caledonia,NC,NCL,540,WEOG
+New Zealand,NZ,NZL,554,WEOG
+Nicaragua,NI,NIC,558,GRULAC
+Niger (the),NE,NER,562,African Group
+Nigeria,NG,NGA,566,African Group
+Niue,NU,NIU,570,Asia-Pacific Group
+Norfolk Island,NF,NFK,574,WEOG
+Northern Mariana Islands (the),MP,MNP,580,Eastern European Group
+Norway,NO,NOR,578,WEOG
+Oman,OM,OMN,512,Asia-Pacific Group
+Pakistan,PK,PAK,586,Asia-Pacific Group
+Palau,PW,PLW,585,Asia-Pacific Group
+"Palestine, State of",PS,PSE,275,Asia-Pacific Group
+Panama,PA,PAN,591,GRULAC
+Papua New Guinea,PG,PNG,598,Asia-Pacific Group
+Paraguay,PY,PRY,600,GRULAC
+Peru,PE,PER,604,GRULAC
+Philippines (the),PH,PHL,608,Asia-Pacific Group
+Pitcairn,PN,PCN,612,WEOG
+Poland,PL,POL,616,Eastern European Group
+Portugal,PT,PRT,620,WEOG
+Puerto Rico,PR,PRI,630,WEOG
+Qatar,QA,QAT,634,Asia-Pacific Group
+Republic of North Macedonia,MK,MKD,807,Eastern European Group
+Romania,RO,ROU,642,Eastern European Group
+Russian Federation (the),RU,RUS,643,Eastern European Group
+Rwanda,RW,RWA,646,African Group
+Réunion,RE,REU,638,WEOG
+Saint Barthélemy,BL,BLM,652,WEOG
+"Saint Helena, Ascension and Tristan da Cunha",SH,SHN,654,WEOG
+Saint Kitts and Nevis,KN,KNA,659,GRULAC
+Saint Lucia,LC,LCA,662,GRULAC
+Saint Martin (French part),MF,MAF,663,WEOG
+Saint Pierre and Miquelon,PM,SPM,666,WEOG
+Saint Vincent and the Grenadines,VC,VCT,670,GRULAC
+Samoa,WS,WSM,882,Asia-Pacific Group
+San Marino,SM,SMR,674,WEOG
+Sao Tome and Principe,ST,STP,678,African Group
+Saudi Arabia,SA,SAU,682,Asia-Pacific Group
+Senegal,SN,SEN,686,African Group
+Serbia,RS,SRB,688,Eastern European Group
+Seychelles,SC,SYC,690,African Group
+Sierra Leone,SL,SLE,694,African Group
+Singapore,SG,SGP,702,Asia-Pacific Group
+Sint Maarten (Dutch part),SX,SXM,534,WEOG
+Slovakia,SK,SVK,703,Eastern European Group
+Slovenia,SI,SVN,705,Eastern European Group
+Solomon Islands,SB,SLB,90,Asia-Pacific Group
+Somalia,SO,SOM,706,African Group
+South Africa,ZA,ZAF,710,African Group
+South Georgia and the South Sandwich Islands,GS,SGS,239,WEOG
+South Sudan,SS,SSD,728,African Group
+Spain,ES,ESP,724,WEOG
+Sri Lanka,LK,LKA,144,Asia-Pacific Group
+Sudan (the),SD,SDN,729,African Group
+Suriname,SR,SUR,740,GRULAC
+Svalbard and Jan Mayen,SJ,SJM,744,WEOG
+Sweden,SE,SWE,752,WEOG
+Switzerland,CH,CHE,756,WEOG
+Syrian Arab Republic,SY,SYR,760,Asia-Pacific Group
+Taiwan,TW,TWN,158,Asia-Pacific Group
+Tajikistan,TJ,TJK,762,Asia-Pacific Group
+"Tanzania, United Republic of",TZ,TZA,834,African Group
+Thailand,TH,THA,764,Asia-Pacific Group
+Timor-Leste,TL,TLS,626,Asia-Pacific Group
+Togo,TG,TGO,768,African Group
+Tokelau,TK,TKL,772,WEOG
+Tonga,TO,TON,776,Asia-Pacific Group
+Trinidad and Tobago,TT,TTO,780,GRULAC
+Tunisia,TN,TUN,788,African Group
+Turkey,TR,TUR,792,WEOG
+Turkmenistan,TM,TKM,795,Asia-Pacific Group
+Turks and Caicos Islands (the),TC,TCA,796,WEOG
+Tuvalu,TV,TUV,798,Asia-Pacific Group
+Uganda,UG,UGA,800,African Group
+Ukraine,UA,UKR,804,Eastern European Group
+United Arab Emirates (the),AE,ARE,784,Asia-Pacific Group
+United Kingdom of Great Britain and Northern Ireland (the),GB,GBR,826,WEOG
+United States Minor Outlying Islands (the),UM,UMI,581,WEOG
+United States of America (the),US,USA,840,WEOG
+Uruguay,UY,URY,858,GRULAC
+Uzbekistan,UZ,UZB,860,Asia-Pacific Group
+Vanuatu,VU,VUT,548,Asia-Pacific Group
+Venezuela (Bolivarian Republic of),VE,VEN,862,GRULAC
+Viet Nam,VN,VNM,704,Asia-Pacific Group
+Virgin Islands (British),VG,VGB,92,WEOG
+Virgin Islands (U.S.),VI,VIR,850,WEOG
+Wallis and Futuna,WF,WLF,876,WEOG
+Western Sahara,EH,ESH,732,African Group
+Yemen,YE,YEM,887,Asia-Pacific Group
+Zambia,ZM,ZMB,894,African Group
+Zimbabwe,ZW,ZWE,716,African Group
+Åland Islands,AX,ALA,248,WEOG

@@ -13,6 +13,7 @@ from obj_func_age import *
 config_sim =\
 {
     'render': False,
+    'save_data': False,
     'save_screeshot': True,
     'screenshot_filename': 'screenshots/screenshot.jpg',
     'display_width': 1200,
@@ -21,6 +22,9 @@ config_sim =\
     'points_per_polygon': 400,
     'infection_cmap': "Oranges",
     'vaccination_cmap': "Blues",
+    'vaccination_0_cmap': "Greens",
+    'vaccination_1_cmap': "Reds",
+    'vaccination_2_cmap': "Purples",
     'international_travel_enabled': True,
     'refresh_rate': 60,
     'time_horizon_days': 365,
@@ -57,7 +61,7 @@ config_sim =\
     'border_closure_factor': 1/10,
     'max_norm_prevalance_to_plot': 1.0,
     'shp_path': "data/data_shapefiles/CNTR_RG_60M_2020_4326.shp",
-    'pop_path': "data/compiled_data.csv",
+    'pop_path': "data/compiled_data_no_hesitancy.csv",
     'airport_path': "data/data_air_travel/Airports_2010.csv",
     'air_travel_path': "data/data_air_travel/Prediction_Monthly.csv"
 }
@@ -80,9 +84,9 @@ def run_baseline(sim):
     vaccination_input =\
         np.full((time_horizon_days, number_of_regions, number_of_age_groups), 0, dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_input, border_closure_input, vaccination_input)
+    total_cost = run(config_sim, sim, lockdown_input, border_closure_input, vaccination_input)
 
-    return total_deaths
+    return total_cost
 
 baseline_cost = run_baseline(sim)
 
@@ -162,9 +166,9 @@ def fitness_func_full(solution, solution_idx):
         for day in range(start_day_border_closure, end_day_border_closure):
             border_closure_sol[day][r] = 1
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -194,9 +198,9 @@ def fitness_func_npis(solution, solution_idx):
     vaccination_sol =\
         np.zeros((time_horizon_days, number_of_regions, number_of_age_groups), dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -228,9 +232,9 @@ def fitness_func_lockdown(solution, solution_idx):
         np.zeros((time_horizon_days, number_of_regions, number_of_age_groups), dtype=int)
     border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -283,9 +287,9 @@ def fitness_func_variable_supply(solution, solution_idx):
     lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
     border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -340,9 +344,9 @@ def fitness_func_constant_rate(solution, solution_idx):
     lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
     border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -364,9 +368,9 @@ def fitness_func_day_zero(solution, solution_idx):
     lockdown_sol       = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
     border_closure_sol = np.full((time_horizon_days, number_of_regions), -1, dtype=int)
 
-    total_deaths = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
+    total_cost = run(config_sim, sim, lockdown_sol, border_closure_sol, vaccination_sol)
 
-    fitness = baseline_cost - total_deaths
+    fitness = baseline_cost - total_cost
 
     return fitness
 
@@ -374,7 +378,7 @@ def fitness_func_day_zero(solution, solution_idx):
 
 config_optimizer =\
 {
-    'num_generations': 1000,
+    'num_generations': 3000,
     'num_parents_mating': 12,
     'sol_per_pop': 24,
     'popsize': 24,
@@ -433,8 +437,10 @@ if __name__ == "__main__":
 
     # Play back the best solution and save a screenshot of the final distribution
     sim.config['render'] = True
+    sim.config['save_data'] = True
     fitness_func(solution, 0)
     sim.config['render'] = False
+    sim.config['save_data'] = False
 
 # -------------------------------------- COMMENTS --------------------------------------------------
 

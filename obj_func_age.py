@@ -297,7 +297,6 @@ def set_initial_cases(regions, number_of_regions, number_of_age_groups, number_o
                 for s in range(number_of_strains):
                     initial_cases[id][a][s] = 1
     elif isinstance(initial_cases_dict, list):
-
         for id in range(len(regions)):
             share_of_pop = np.sum(population_sizes_by_age_group[id])\
                            / np.sum(population_sizes_by_age_group)
@@ -381,7 +380,7 @@ def get_vaccine_hesitant(regions, number_of_regions, number_of_age_groups, age_d
 
     return vaccine_hesitant
 
-def draw_regions(lockdown_status, border_closure_status, prevalence, day, infected,
+def draw_regions(lockdown_status, border_closure_status, prevalence, day, infected, cases, label,
                  deaths, total_doses_administered, screen, font_size, scalar_cmap, regions):
     """Draws regions as polygons, colouring the interior according to prevalence and the border
     according to lockdown and border closure status"""
@@ -414,11 +413,19 @@ def draw_regions(lockdown_status, border_closure_status, prevalence, day, infect
 
     surface = pygame.display.get_surface()
 
+    text_surf = FONT.render(label, True, BLACK)
+    text_rect = text_surf.get_rect(topleft=(0, surface.get_height() - (6 * font_size)))
+    screen.blit(text_surf, text_rect)
+
     text_surf = FONT.render("Day: " + str(day), True, BLACK)
-    text_rect = text_surf.get_rect(topleft=(0, surface.get_height() - (4 * font_size)))
+    text_rect = text_surf.get_rect(topleft=(0, surface.get_height() - (5 * font_size)))
     screen.blit(text_surf, text_rect)
 
     text_surf = FONT.render("Infected: " + str(infected), True, BLACK)
+    text_rect = text_surf.get_rect(topleft=(0, surface.get_height() - (4 * font_size)))
+    screen.blit(text_surf, text_rect)
+
+    text_surf = FONT.render("Cases: " + str(cases), True, BLACK)
     text_rect = text_surf.get_rect(topleft=(0, surface.get_height() - (3 * font_size)))
     screen.blit(text_surf, text_rect)
 
@@ -441,6 +448,9 @@ def sim_factory(config):
     points_per_polygon        = config['points_per_polygon']
     infection_cmap            = config['infection_cmap']
     vaccination_cmap          = config['vaccination_cmap']
+    vaccination_0_cmap        = config['vaccination_0_cmap']
+    vaccination_1_cmap        = config['vaccination_1_cmap']
+    vaccination_2_cmap        = config['vaccination_2_cmap']
     travel_enabled            = config['international_travel_enabled']
     distance_threshold        = config['distance_threshold']
     local_travel_prob_per_day = config['local_travel_prob_per_day']
@@ -477,6 +487,9 @@ def sim_factory(config):
     # Build colour map for rendering
     sim.infection_cmap = get_scalar_cmap(infection_cmap, 0, 1)
     sim.vaccination_cmap = get_scalar_cmap(vaccination_cmap, 0, 1)
+    sim.vaccination_0_cmap = get_scalar_cmap(vaccination_0_cmap, 0, 1)
+    sim.vaccination_1_cmap = get_scalar_cmap(vaccination_1_cmap, 0, 1)
+    sim.vaccination_2_cmap = get_scalar_cmap(vaccination_2_cmap, 0, 1)
 
     # Numbers of regions and strains
     sim.number_of_regions = len(sim.regions)
@@ -506,6 +519,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     """Main simulation function"""
 
     render                = config['render']
+    save_data             = config['save_data']
     save_screeshot        = config['save_screeshot']
     screenshot_filename   = config['screenshot_filename']
     display_width         = config['display_width']
@@ -524,6 +538,9 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     baseline_contact_matrix = sim.contact_matrix
     infection_cmap          = sim.infection_cmap
     vaccination_cmap        = sim.vaccination_cmap
+    vaccination_0_cmap      = sim.vaccination_0_cmap
+    vaccination_1_cmap      = sim.vaccination_1_cmap
+    vaccination_2_cmap      = sim.vaccination_2_cmap
     number_of_regions       = sim.number_of_regions
     number_of_strains       = sim.number_of_strains
     population_sizes        = sim.population_sizes_by_age_group
@@ -571,10 +588,12 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     for j in range(number_of_regions):
         N_bar[j] = 1 / np.sum(N[j])
 
-    total_doses_administered = np.zeros((number_of_regions), dtype=np.uint64)
+    if save_data:
+        doses_administered = np.zeros((T, number_of_regions, number_of_age_groups), dtype=int)
+    total_doses_administered = np.zeros((number_of_regions, number_of_age_groups), dtype=np.uint64)
 
     t = 0
-    display_data = -1
+    display_data = 0
     color_map = infection_cmap
     done = False
     while not done:
@@ -587,28 +606,49 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             # Calculate deaths
             infected  = round(np.sum(I[t]))
             deaths = round(np.sum(D[t]))
+            cases = round(np.sum(D[t])) + deaths
             # Mouse input
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        display_data *= -1
+                        display_data = (display_data + 1) % 5
+                    if event.button == 3:
+                        display_data = (display_data - 1) % 5
             # Calculate prevalence
             prevalence = {}
             max_vac_cov = 1.0
             for region in regions:
-                if display_data == 1:
+                if display_data == 0:
                     color_map = infection_cmap
+                    label = 'Prevalence (all ages)'
                     normalized_prevalence = np.sum(I[t][region.id]) / np.sum(N[region.id])
                     prevalence[region] = min(normalized_prevalence, max_norm_prev) / max_norm_prev
-                if display_data == -1:
+                if display_data == 1:
                     color_map = vaccination_cmap
-                    coverage = total_doses_administered[region.id] / np.sum(N[region.id])
+                    label = 'Vaccine coverage (all ages)'
+                    coverage = np.sum(total_doses_administered[region.id]) / np.sum(N[region.id])
+                    prevalence[region] = min(coverage, max_vac_cov) / max_vac_cov
+                if display_data == 2:
+                    color_map = vaccination_0_cmap
+                    label = 'Vaccine coverage (age 0-17)'
+                    coverage = total_doses_administered[region.id][0] / N[region.id][0]
+                    prevalence[region] = min(coverage, max_vac_cov) / max_vac_cov
+                if display_data == 3:
+                    color_map = vaccination_1_cmap
+                    label = 'Vaccine coverage (age 18-64)'
+                    coverage = total_doses_administered[region.id][1] / N[region.id][1]
+                    prevalence[region] = min(coverage, max_vac_cov) / max_vac_cov
+                if display_data == 4:
+                    color_map = vaccination_2_cmap
+                    label = 'Vaccine coverage (age 65+)'
+                    coverage = total_doses_administered[region.id][2] / N[region.id][2]
                     prevalence[region] = min(coverage, max_vac_cov) / max_vac_cov
             # Draw regions
-            draw_regions(lockdown_status, border_closure_status, prevalence, day, infected, deaths,
-                         np.sum(total_doses_administered), screen, font_size, color_map, regions)
+            draw_regions(lockdown_status, border_closure_status, prevalence, day, infected, cases,
+                         label, deaths, np.sum(total_doses_administered), screen, font_size,
+                         color_map, regions)
 
         # Update non-pharmacheutical interventions at the end of each day
         if t % steps_in_a_day == 0:
@@ -630,11 +670,13 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         if t < T - 1:
 
             # Vaccination
-            doses_administered = np.minimum(S[t], vaccination_input[day] / steps_in_a_day)
-            S[t] = S[t] - doses_administered
-            R[t] = R[t] + doses_administered
+            new_doses_administered = np.minimum(S[t], vaccination_input[day] / steps_in_a_day)
+            if save_data:
+                doses_administered[t] = new_doses_administered
+            S[t] = S[t] - new_doses_administered
+            R[t] = R[t] + new_doses_administered
             total_doses_administered =\
-                (total_doses_administered + doses_administered.sum(axis=1)).astype(np.uint64)
+                (total_doses_administered + new_doses_administered).astype(np.uint64)
 
             # Update
             A = np.matmul(contact_matrix, np.multiply(np.sum(I[t], axis=1), N_bar[:, None]))
@@ -661,6 +703,11 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             pygame.image.save(screen, screenshot_filename)
         pygame.quit()
 
-    total_deaths = round(np.sum(D[t]))
+    if save_data:
+        np.save("doses_administered.npy", doses_administered)
+        np.save("population_sizes_by_age.npy", N)
 
-    return total_deaths
+    total_deaths = round(np.sum(D[t]))
+    total_cases = round(np.sum(R[t])) + total_deaths
+
+    return total_deaths # total_cases
