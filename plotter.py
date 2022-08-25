@@ -82,7 +82,6 @@ def plot_stacked_bar_chart(doses_administered_by_un_region, x_lim):
                 else:
                     share_per_region[un_region][a][t] = 0
 
-    x_lim = 12*56
     x = list(range(x_lim))
     y00 = share_per_region[0][0][0:x_lim]
     y01 = share_per_region[0][1][0:x_lim]
@@ -191,6 +190,46 @@ def plot_coverage(doses_administered_by_un_region, x_lim):
     plt.grid(False)
     plt.show()
 
+def plot_pie_chart(cumulative_doses_administered_by_un_region):
+    """Plots pie chart of total vaccine allocation to each region and age group"""
+
+    y = cumulative_doses_administered_by_un_region.flatten()
+
+    mylabels = ["Asia-Pacific, 0-17",
+                "Asia-Pacific, 18-64",
+                "Asia-Pacific, 65+",
+                "Western Europe and Others, 0-17",
+                "Western Europe and Others, 18-64",
+                "Western Europe and Others, 65+",
+                "Latin America and Caribbean, 0-17",
+                "Latin America and Caribbean, 18-64",
+                "Latin America and Caribbean, 65+",
+                "Africa, 0-17",
+                "Africa, 18-64",
+                "Africa, 65+",
+                "Eastern Europe, 0-17",
+                "Eastern Europe, 18-64",
+                "Eastern Europe"]
+
+    mycolors = [(0.0, 0.5019607843137255, 0.0, 0.33),
+                (0.0, 0.5019607843137255, 0.0, 0.66),
+                (0.0, 0.5019607843137255, 0.0, 1.0),
+                (1.0, 0.6470588235294118, 0.0, 0.33),
+                (1.0, 0.6470588235294118, 0.0, 0.66),
+                (1.0, 0.6470588235294118, 0.0, 1.0),
+                (0.5019607843137255, 0.0, 0.5019607843137255, 0.33),
+                (0.5019607843137255, 0.0, 0.5019607843137255, 0.66),
+                (0.5019607843137255, 0.0, 0.5019607843137255, 1.0),
+                (0.0, 0.0, 1.0, 0.33),
+                (0.0, 0.0, 1.0, 0.66),
+                (0.0, 0.0, 1.0, 1.0),
+                (1.0, 0.0, 0.0, 0.33),
+                (1.0, 0.0, 0.0, 0.66),
+                (1.0, 0.0, 0.0, 1.0)]
+
+    plt.pie(y, labels = mylabels, colors = mycolors)
+    plt.show()
+
 un_regions = get_un_regions()
 
 population_by_un_region = get_population_by_un_region(un_regions, N)
@@ -205,13 +244,15 @@ coverage_by_un_region = np.divide(doses_administered_by_un_region,
 cumulative_coverage_by_un_region = np.divide(cumulative_doses_administered_by_un_region,
                                              population_by_un_region[:, :, None])
 
-x_lim = int(T/2)
+x_lim = int(T/6)
+
+plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
 
 # plot_stacked_bar_chart(doses_administered_by_un_region, x_lim)
 
-print(population_by_un_region / np.sum(population_by_un_region, axis=1)[:, None])
+# print(population_by_un_region / np.sum(population_by_un_region, axis=1)[:, None])
 
-plot_cumulative_coverage_by_un_region(cumulative_coverage_by_un_region, x_lim)
+# plot_cumulative_coverage_by_un_region(cumulative_coverage_by_un_region, x_lim)
 
 # plot_coverage(doses_administered_by_un_region, x_lim)
 
