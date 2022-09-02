@@ -13,7 +13,7 @@ from obj_func import *
 config_sim =\
 {
     'render': False,
-    'save_screeshot': True,
+    'save_screenshot': True,
     'screenshot_filename': 'screenshots/screenshot.jpg',
     'display_width': 1200,
     'display_height': 700,

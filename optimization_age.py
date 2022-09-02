@@ -15,7 +15,7 @@ config_sim =\
 {
     'render': False,
     'save_data': False,
-    'save_screeshot': True,
+    'save_screenshot': True,
     'screenshot_filename': 'screenshots/screenshot.jpg',
     'display_width': 1200,
     'display_height': 700,
@@ -93,10 +93,11 @@ baseline_cost = run_baseline(sim)
 
 # -------------------------------------- FITNESS FUNCTIONS -----------------------------------------
 
-time_horizon_days    = sim.config['time_horizon_days']
-number_of_regions    = sim.number_of_regions
-population_sizes     = np.sum(sim.population_sizes_by_age_group, axis=1)
-number_of_age_groups = sim.number_of_age_groups
+time_horizon_days             = sim.config['time_horizon_days']
+number_of_regions             = sim.number_of_regions
+population_sizes_by_age_group = sim.population_sizes_by_age_group
+population_sizes              = np.sum(sim.population_sizes_by_age_group, axis=1)
+number_of_age_groups          = sim.number_of_age_groups
 
 def fitness_func_full(solution, solution_idx):
     """Lockdown and border closure for certain periods of time and vaccinate at a constant rate.
@@ -255,12 +256,12 @@ def fitness_func_variable_supply(solution, solution_idx):
     num_supply_periods = (time_horizon_days // LEN_SUPPLY_PERIOD) + 1
 
     # Supply the doses equally over time
-    supply = np.full((num_supply_periods), int(TOTAL_DOSES / num_supply_periods), dtype=int)
+    # supply = np.full((num_supply_periods), int(TOTAL_DOSES / num_supply_periods), dtype=int)
 
     # Supply the doses according to a time-dependent distribution of appropriate length
-    # supply = np.array([0.0005, 0.0004, 0.0007, 0.0012, 0.0023, 0.0030,
-    #                    0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040])
-    # supply = ((supply / np.sum(supply)) * TOTAL_DOSES).astype(int)
+    supply = np.array([0.0000, 0.0001, 0.0006, 0.0008, 0.0021, 0.0026,
+                       0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040, 0.0040])
+    supply = ((supply / np.sum(supply)) * TOTAL_DOSES).astype(int)
 
     solution_part_1 = solution[0:number_of_regions * num_supply_periods]
     solution_part_2 = solution[number_of_regions * num_supply_periods:]
@@ -379,11 +380,11 @@ def fitness_func_day_zero(solution, solution_idx):
 
 config_optimizer =\
 {
-    'num_generations': 10000,
-    'num_parents_mating': 7,
-    'sol_per_pop': 21,
+    'num_generations': 500,
+    'num_parents_mating': 40,
+    'sol_per_pop': 200,
     'fitness_func': fitness_func_day_zero,
-    'num_genes': (number_of_regions * number_of_age_groups)
+    'num_genes': number_of_regions * number_of_age_groups
 }
 
 # -------------------------------------- OPTIMIZER -------------------------------------------------
@@ -406,10 +407,15 @@ def on_generation(ga_instance):
     print("Fitness    = {cost}".format(cost=\
           ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1]))
 
+initial_population = np.random.rand(199, number_of_regions * number_of_age_groups)
+guess_solution = (population_sizes_by_age_group / np.sum(population_sizes_by_age_group)).flatten()
+initial_population = np.vstack([initial_population, guess_solution])
+
 ga_instance = PooledGA(num_generations=config_optimizer['num_generations'],
                        num_parents_mating=config_optimizer['num_parents_mating'],
                        sol_per_pop=config_optimizer['sol_per_pop'],
                        num_genes=config_optimizer['num_genes'],
+                       initial_population=initial_population,
                        fitness_func=fitness_func,
                        on_generation=on_generation,
                        gene_type=float)
@@ -421,7 +427,7 @@ if __name__ == "__main__":
     # ga_instance = pygad.load(filename=filename)
 
     # Run the genetic algorithm
-    with Pool(processes=7) as pool:
+    with Pool(processes=15) as pool:
         ga_instance.run()
 
     # Plot the fitness curve

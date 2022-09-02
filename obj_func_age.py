@@ -520,7 +520,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
 
     render                = config['render']
     save_data             = config['save_data']
-    save_screeshot        = config['save_screeshot']
+    save_screenshot        = config['save_screenshot']
     screenshot_filename   = config['screenshot_filename']
     display_width         = config['display_width']
     display_height        = config['display_height']
@@ -606,7 +606,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             # Calculate deaths
             infected  = round(np.sum(I[t]))
             deaths = round(np.sum(D[t]))
-            cases = round(np.sum(D[t])) + deaths
+            cases  = round(np.sum(R[t]) - np.sum(total_doses_administered)) + deaths
             # Mouse input
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -699,7 +699,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             clock.tick(refresh_rate)
 
     if render:
-        if save_screeshot:
+        if save_screenshot:
             pygame.image.save(screen, screenshot_filename)
         pygame.quit()
 
@@ -708,6 +708,6 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         np.save("population_sizes_by_age.npy", N)
 
     total_deaths = round(np.sum(D[t]))
-    total_cases = round(np.sum(R[t])) + total_deaths
+    total_cases = round(np.sum(R[t]) - np.sum(total_doses_administered)) + total_deaths
 
-    return total_deaths # total_cases
+    return total_cases

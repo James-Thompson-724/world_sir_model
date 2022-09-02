@@ -435,7 +435,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
     """Main simulation function"""
 
     render                = config['render']
-    save_screeshot        = config['save_screeshot']
+    save_screenshot        = config['save_screenshot']
     screenshot_filename   = config['screenshot_filename']
     display_width         = config['display_width']
     display_height        = config['display_height']
@@ -580,7 +580,7 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
             clock.tick(refresh_rate)
 
     if render:
-        if save_screeshot:
+        if save_screenshot:
             pygame.image.save(screen, screenshot_filename)
         pygame.quit()
 
