@@ -1,3 +1,4 @@
+
 import pygad
 import numpy as np
 import os
@@ -378,12 +379,11 @@ def fitness_func_day_zero(solution, solution_idx):
 
 config_optimizer =\
 {
-    'num_generations': 3000,
-    'num_parents_mating': 12,
-    'sol_per_pop': 24,
-    'popsize': 24,
-    'fitness_func': fitness_func_constant_rate,
-    'num_genes': number_of_regions + (number_of_regions * number_of_age_groups)
+    'num_generations': 10000,
+    'num_parents_mating': 7,
+    'sol_per_pop': 21,
+    'fitness_func': fitness_func_day_zero,
+    'num_genes': (number_of_regions * number_of_age_groups)
 }
 
 # -------------------------------------- OPTIMIZER -------------------------------------------------
@@ -421,7 +421,7 @@ if __name__ == "__main__":
     # ga_instance = pygad.load(filename=filename)
 
     # Run the genetic algorithm
-    with Pool(processes=12) as pool:
+    with Pool(processes=7) as pool:
         ga_instance.run()
 
     # Plot the fitness curve

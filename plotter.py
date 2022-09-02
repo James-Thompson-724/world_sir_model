@@ -3,16 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-doses_administered = np.load("doses_administered.npy")
-N = np.load("population_sizes_by_age.npy")
-
-T = doses_administered.shape[0]
-number_of_regions = doses_administered.shape[1]
-number_of_age_groups = doses_administered.shape[2]
-
-doses_administered = np.moveaxis(doses_administered, [0], [2])
-cumulative_doses_administered = np.cumsum(doses_administered, axis=2)
-
 def get_un_regions():
     """Creates array indicating to which UN region each country belongs"""
 
@@ -149,12 +139,19 @@ def plot_cumulative_coverage_by_un_region(cumulative_coverage_by_un_region, x_li
     plt.xlim(0, x_lim)
 
     color_dict = {0: 'green', 1: 'orange', 2: 'purple', 3: 'blue', 4: 'red'}
-    label_dict = {0: 'Asia-Pacific, ', 1: 'Western Europe and Others, ', 2: 'Latin America and Caribbean, ', 3: 'Africa, ', 4: 'Eastern Europe, '}
+    label_dict = {0: 'Asia-Pacific, ', 1: 'Western Europe and Others, ',
+                  2: 'Latin America and Caribbean, ', 3: 'Africa, ', 4: 'Eastern Europe, '}
     for un_region in range(5):
+        print(label_dict[un_region] + "0-17:", cumulative_coverage_by_un_region[un_region][0][0])
+        print(label_dict[un_region] + "18-64:", cumulative_coverage_by_un_region[un_region][1][0])
+        print(label_dict[un_region] + "65+:", cumulative_coverage_by_un_region[un_region][2][0])
         color = color_dict[un_region]
-        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][0][0:x_lim], color, linewidth=1, linestyle='solid', alpha=1.0, label= label_dict[un_region] + " 0-17")
-        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][1][0:x_lim], color, linewidth=1, linestyle='dotted', alpha=1.0, label= label_dict[un_region] + " 18-64")
-        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][2][0:x_lim], color, linewidth=1, linestyle='dashed', alpha=1.0, label= label_dict[un_region] + " 65+")
+        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][0][0:x_lim], color,
+            linewidth=1, linestyle='solid', alpha=1.0, label= label_dict[un_region] + " 0-17")
+        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][1][0:x_lim], color,
+            linewidth=1, linestyle='dotted', alpha=1.0, label= label_dict[un_region] + " 18-64")
+        plt.plot(list(range(x_lim)), cumulative_coverage_by_un_region[un_region][2][0:x_lim], color,
+            linewidth=1, linestyle='dashed', alpha=1.0, label= label_dict[un_region] + " 65+")
 
     plt.ylabel('Share Vaccinated')
     plt.xlabel('Day')
@@ -178,7 +175,8 @@ def plot_coverage(doses_administered_by_un_region, x_lim):
 
     coverage = np.sum(doses_administered_by_un_region, axis=0)
     cov = np.sum(coverage, axis=0) / np.sum(population_by_un_region)
-    plt.plot(list(range(x_lim)), cov[0:x_lim], 'red', linewidth=1, linestyle='solid', alpha=1.0, label= "all")
+    plt.plot(list(range(x_lim)), cov[0:x_lim], 'red', linewidth=1,
+             linestyle='solid', alpha=1.0, label= "all")
 
     plt.ylabel('Share Vaccinated')
     plt.xlabel('Day')
@@ -195,7 +193,9 @@ def plot_pie_chart(cumulative_doses_administered_by_un_region):
 
     y = cumulative_doses_administered_by_un_region.flatten()
 
-    mylabels = ["Asia-Pacific, 0-17",
+    plt.figure(figsize=(14, 8))
+
+    unlabels = ["Asia-Pacific, 0-17",
                 "Asia-Pacific, 18-64",
                 "Asia-Pacific, 65+",
                 "Western Europe and Others, 0-17",
@@ -211,7 +211,7 @@ def plot_pie_chart(cumulative_doses_administered_by_un_region):
                 "Eastern Europe, 18-64",
                 "Eastern Europe"]
 
-    mycolors = [(0.0, 0.5019607843137255, 0.0, 0.33),
+    uncolors = [(0.0, 0.5019607843137255, 0.0, 0.33),
                 (0.0, 0.5019607843137255, 0.0, 0.66),
                 (0.0, 0.5019607843137255, 0.0, 1.0),
                 (1.0, 0.6470588235294118, 0.0, 0.33),
@@ -227,8 +227,44 @@ def plot_pie_chart(cumulative_doses_administered_by_un_region):
                 (1.0, 0.0, 0.0, 0.66),
                 (1.0, 0.0, 0.0, 1.0)]
 
-    plt.pie(y, labels = mylabels, colors = mycolors)
-    plt.show()
+    plt.pie(y, labels = None, colors = uncolors)
+    plt.legend(unlabels, loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+    # plt.show()
+    plt.savefig("piechart.png")
+
+def plot_pie_chart_age_compressed(cumulative_doses_administered_by_un_region):
+    """Plots pie chart of total vaccine allocation to each region and age group"""
+
+    y = cumulative_doses_administered_by_un_region.flatten()
+
+    plt.figure(figsize=(14, 8))
+
+    unlabels = ["Asia-Pacific",
+                "Western Europe and Others",
+                "Latin America and Caribbean",
+                "Africa",
+                "Eastern Europe"]
+
+    uncolors = [(0.0, 0.5019607843137255, 0.0, 1.0),
+                (1.0, 0.6470588235294118, 0.0, 1.0),
+                (0.5019607843137255, 0.0, 0.5019607843137255, 1.0),
+                (0.0, 0.0, 1.0, 1.0),
+                (1.0, 0.0, 0.0, 1.0)]
+
+    plt.pie(y, labels = None, colors = uncolors)
+    plt.legend(unlabels, loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+    # plt.show()
+    plt.savefig("piechart_age_compressed.png")
+
+doses_administered = np.load("fitness_func_day_zero_deaths_1b/doses_administered.npy")
+N = np.load("fitness_func_day_zero_deaths_1b/population_sizes_by_age.npy")
+
+T = doses_administered.shape[0]
+number_of_regions = doses_administered.shape[1]
+number_of_age_groups = doses_administered.shape[2]
+
+doses_administered = np.moveaxis(doses_administered, [0], [2])
+cumulative_doses_administered = np.cumsum(doses_administered, axis=2)
 
 un_regions = get_un_regions()
 
@@ -244,35 +280,36 @@ coverage_by_un_region = np.divide(doses_administered_by_un_region,
 cumulative_coverage_by_un_region = np.divide(cumulative_doses_administered_by_un_region,
                                              population_by_un_region[:, :, None])
 
-x_lim = int(T/6)
+coverage_by_un_region_age_compressed = np.sum(np.sum(doses_administered_by_un_region, axis=2), axis=1) /\
+                                                 np.sum(population_by_un_region, axis=1)
 
-plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
+# x_lim = int(T/6)
+
+# plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
+
+# plot_pie_chart_age_compressed(np.sum(np.sum(doses_administered_by_un_region, axis=2), axis=1))
 
 # plot_stacked_bar_chart(doses_administered_by_un_region, x_lim)
 
 # print(population_by_un_region / np.sum(population_by_un_region, axis=1)[:, None])
 
+# print(np.sum(coverage_by_un_region, axis=2))
+
 # plot_cumulative_coverage_by_un_region(cumulative_coverage_by_un_region, x_lim)
 
 # plot_coverage(doses_administered_by_un_region, x_lim)
 
-# plt.figure(figsize=(8, 6))
-# font = {'size' : 12}
-# plt.rc('font', **font)
-# x_lim = int(T/2)
-# plt.xlim(0, x_lim)
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
+def get_scalar_cmap(cmap, min_val, max_val):
+    """Constucts scalar colour map to represent disease prevalence when rendering"""
 
-# coverage = np.sum(doses_administered_by_un_region, axis=0)
-# plt.plot(list(range(x_lim)), coverage[0][0:x_lim], 'red', linewidth=1, linestyle='solid', alpha=1.0, label= "0-17")
-# plt.plot(list(range(x_lim)), coverage[1][0:x_lim], 'red', linewidth=1, linestyle='dotted', alpha=1.0, label= "18-64")
-# plt.plot(list(range(x_lim)), coverage[2][0:x_lim], 'red', linewidth=1, linestyle='dashed', alpha=1.0, label= "65+")
+    cm = plt.get_cmap(cmap)
+    cNorm = colors.Normalize(vmin=min_val, vmax=max_val)
 
-# plt.ylabel('Share Vaccinated')
-# plt.xlabel('Day')
-# plt.xticks(ticks=[a*28*12 for a in range((x_lim // (28*12)) + 1)],
-#             labels=[a*28 for a in range((x_lim // (28*12)) + 1)])
+    return cmx.ScalarMappable(norm=cNorm, cmap=cm)
+scalar_cmap = get_scalar_cmap("Blues", 0, 1)
 
-# plt.legend(loc='upper right', prop={'size': 10})
-
-# plt.grid(False)
-# plt.show()
+for prev in range(100):
+    prev /= 100
+    colour = scalar_cmap.to_rgba(prev, bytes = True)
