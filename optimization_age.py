@@ -380,11 +380,11 @@ def fitness_func_day_zero(solution, solution_idx):
 
 config_optimizer =\
 {
-    'num_generations': 500,
-    'num_parents_mating': 40,
-    'sol_per_pop': 200,
-    'fitness_func': fitness_func_day_zero,
-    'num_genes': number_of_regions * number_of_age_groups
+    'num_generations': 10000,
+    'num_parents_mating': 8,
+    'sol_per_pop': 30,
+    'fitness_func': fitness_func_constant_rate,
+    'num_genes': number_of_regions + (number_of_regions * number_of_age_groups)
 }
 
 # -------------------------------------- OPTIMIZER -------------------------------------------------
@@ -407,15 +407,15 @@ def on_generation(ga_instance):
     print("Fitness    = {cost}".format(cost=\
           ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1]))
 
-initial_population = np.random.rand(199, number_of_regions * number_of_age_groups)
-guess_solution = (population_sizes_by_age_group / np.sum(population_sizes_by_age_group)).flatten()
-initial_population = np.vstack([initial_population, guess_solution])
+# initial_population = np.random.rand(199, number_of_regions * number_of_age_groups)
+# guess_solution = (population_sizes_by_age_group / np.sum(population_sizes_by_age_group)).flatten()
+# initial_population = np.vstack([initial_population, guess_solution])
 
 ga_instance = PooledGA(num_generations=config_optimizer['num_generations'],
                        num_parents_mating=config_optimizer['num_parents_mating'],
                        sol_per_pop=config_optimizer['sol_per_pop'],
                        num_genes=config_optimizer['num_genes'],
-                       initial_population=initial_population,
+                       # initial_population=initial_population,
                        fitness_func=fitness_func,
                        on_generation=on_generation,
                        gene_type=float)

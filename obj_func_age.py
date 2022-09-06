@@ -708,6 +708,6 @@ def run(config, sim, lockdown_input, border_closure_input, vaccination_input):
         np.save("population_sizes_by_age.npy", N)
 
     total_deaths = round(np.sum(D[t]))
-    total_cases = round(np.sum(R[t]) - np.sum(total_doses_administered)) + total_deaths
+    # total_cases = round(np.sum(R[t]) - np.sum(total_doses_administered)) + total_deaths
 
-    return total_cases
+    return total_deaths
