@@ -285,7 +285,7 @@ coverage_by_un_region_age_compressed = np.sum(np.sum(doses_administered_by_un_re
 
 x_lim = int(T)
 
-plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
+# plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
 
 # plot_pie_chart_age_compressed(np.sum(np.sum(doses_administered_by_un_region, axis=2), axis=1))
 
