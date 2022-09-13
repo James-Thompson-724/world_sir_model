@@ -8,7 +8,7 @@ from tqdm import tqdm
 def run(solution):
     """Main simulation function"""
 
-    time_horizon_days     = 365
+    time_horizon_days     = 3650
     step_size             = 1
     beta                  = np.array([0.2723], dtype=float)
     gamma                 = np.array([1/9], dtype=float)
@@ -143,7 +143,7 @@ def plot_heat_map(data):
 #       [0, 0, TOTAL_DOSES * a * (1-b)],
 #       [0, 0, TOTAL_DOSES * a * b])
 
-TOTAL_DOSES = 500000
+TOTAL_DOSES = 1500000
 dim = 100
 data = np.zeros((dim + 1, ), dtype=np.uint64)
 for i in tqdm(range(dim + 1)):
@@ -169,14 +169,15 @@ plt.xlim(0,100)
 
 plt.ticklabel_format(style='plain')
 
+plt.title("1500000 doses")
 plt.ylabel('Total Cases (thousands)')
-plt.xlabel('Proportion of Country A vaccinated')
+plt.xlabel('Proportion of doses going to Country A')
 plt.xticks(ticks=[10 * a for a in range(11)],
            labels=[a / 10 for a in range(11)])
 
 plt.plot(list(range(len(data))), data)
-plt.show()
-# plt.savefig("test.png")
+# plt.show()
+plt.savefig("test.png")
 
 """With limited supply of vaccines, aim for herd immunity in the small countries. Eventually, when
 the supply is large enough, it becomes optimal to vaccination only the large country (even if this
