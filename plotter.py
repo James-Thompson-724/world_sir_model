@@ -256,8 +256,8 @@ def plot_pie_chart_age_compressed(cumulative_doses_administered_by_un_region):
     # plt.show()
     plt.savefig("piechart_age_compressed.png")
 
-doses_administered = np.load("fitness_func_multi_day_deaths_1b/doses_administered.npy")
-N = np.load("fitness_func_multi_day_deaths_1b/population_sizes_by_age.npy")
+doses_administered = np.load("fitness_func_constant_rate_deaths_1b/doses_administered.npy")
+N = np.load("fitness_func_constant_rate_deaths_1b/population_sizes_by_age.npy")
 
 T = doses_administered.shape[0]
 number_of_regions = doses_administered.shape[1]
@@ -285,11 +285,13 @@ coverage_by_un_region_age_compressed = np.sum(np.sum(doses_administered_by_un_re
 
 x_lim = int(T)
 
-# plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
+plot_pie_chart(np.sum(doses_administered_by_un_region, axis=2))
 
 # plot_pie_chart_age_compressed(np.sum(np.sum(doses_administered_by_un_region, axis=2), axis=1))
 
-plot_stacked_bar_chart(doses_administered_by_un_region, x_lim)
+# print(np.sum(np.sum(doses_administered_by_un_region, axis=2), axis=1) / np.sum(population_by_un_region, axis=1))
+
+# plot_stacked_bar_chart(doses_administered_by_un_region, x_lim)
 
 # print(population_by_un_region / np.sum(population_by_un_region, axis=1)[:, None])
 
